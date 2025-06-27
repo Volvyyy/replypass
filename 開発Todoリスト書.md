@@ -10,11 +10,11 @@
 ## **1. 概要**
 
 ### 1.0. 進捗状況（2025-06-27時点）
-**完了タスク数**: 19/252タスク（7.5%）
-- **環境構築**: 14/16タスク完了（87.5%）
+**完了タスク数**: 20/252タスク（7.9%）
+- **環境構築**: 16/16タスク完了（100%）
 - **データベース基盤**: 3/8タスク完了（37.5%）
 - **認証システム基盤**: 2/8タスク完了（25.0%）
-- **MVP開発**: 19/72タスク完了（26.4%）
+- **MVP開発**: 20/72タスク完了（27.8%）
 
 **完了済みタスク**:
 - ✅ ENV-001: Next.js 15.3.4プロジェクト作成
@@ -31,6 +31,7 @@
 - ✅ ENV-013: 環境変数テンプレート作成
 - ✅ ENV-014: Supabase CLI設定（v2.26.9、Google OAuth対応）
 - ✅ ENV-015: API外部サービス設定（Gemini新SDK、Stripe最新版）
+- ✅ ENV-016: CI/CD基本設定（GitHub Actions workflow、プルリクエスト自動チェック機能）
 - ✅ DB-001: Supabaseマイグレーション初期化（PostgreSQL 17、RLS対応）
 - ✅ DB-002: 基本テーブル作成（PostgreSQL 17最適化、月次パーティション、GIN索引）
 - ✅ DB-003: 残りテーブル作成（全12テーブル完成、PostgreSQL 17 BRIN・GIN・カバリングインデックス、利用制限関数）
@@ -45,7 +46,7 @@
 **次の高優先度タスク**:
 - FE-002: ログイン画面実装（React Hook Form + Zodバリデーション）
 - FE-003: サインアップ画面実装（利用規約同意チェックボックス）
-- ENV-016: CI/CD基本設定（GitHub Actions、Vercel、VPS自動デプロイ）
+- BE-001: FastAPI基本設定（CORS、セキュリティミドルウェア）
 
 ### 1.1. タスク表記規則
 - **[ENV]**: 環境構築・設定
@@ -123,13 +124,13 @@
    - **ファイル**: `backend/app/main.py`、`backend/app/__init__.py`
    - **完了条件**: `uvicorn app.main:app --reload`で起動確認
 
-3. **[ENV-003]** Supabaseプロジェクト作成・設定 `1` `S`
+3. **[ENV-003]** Supabaseプロジェクト作成・設定 `1` `S` ✅ **完了**
    - Supabaseダッシュボードでプロジェクト作成
    - 環境変数設定（URL、API Key）
    - **ファイル**: `frontend/.env.local`、`backend/.env`
    - **完了条件**: 管理画面へのアクセス確認
 
-4. **[ENV-004]** Git/GitHub設定 `1` `XS` ✅ **完了** (GitHubリポジトリ作成は未完了)
+4. **[ENV-004]** Git/GitHub設定 `1` `XS` ✅ **完了** 
    - リポジトリ作成、初期コミット
    - ブランチ戦略設定（main, develop）
    - **ファイル**: `.gitignore`、`README.md`
@@ -165,7 +166,7 @@
     - 統一コーディング規約
     - **完了条件**: 自動フォーマット機能確認
 
-12. **[ENV-012]** Python設定（Black、isort、mypy） `4` `XS`
+12. **[ENV-012]** Python設定（Black、isort、mypy） `4` `XS` ✅ **完了**
     - **ファイル**: `backend/pyproject.toml`
     - **完了条件**: `black . && isort . && mypy .`でエラーなし
 
@@ -175,7 +176,7 @@
     - 必要な環境変数の一覧化
     - **完了条件**: 新規開発者が設定手順に従って環境構築完了
 
-14. **[ENV-014]** Supabase CLI設定 `4` `S`
+14. **[ENV-014]** Supabase CLI設定 `4` `S` ✅ **完了**
     - **ファイル**: `supabase/config.toml`
     - ローカル開発環境のセットアップ
     - **コマンド**: `supabase init`、`supabase start`
@@ -187,9 +188,9 @@
     - **実装ファイル**: `app/gemini_client.py`, `app/stripe_client.py`
     - **完了条件**: 各APIクライアントのインポート成功
 
-16. **[ENV-016]** CI/CD基本設定 `4` `M`
+16. **[ENV-016]** CI/CD基本設定 `4` `M` ✅ **完了**
     - **ファイル**: `.github/workflows/test.yml`
-    - Linter、テスト自動実行
+    - GitHub Actions workflow作成（フロントエンド・バックエンド並列チェック）
     - **完了条件**: プルリクエスト時の自動チェック機能確認
 
 ### **2.2. データベース基盤（8タスク）**
