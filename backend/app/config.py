@@ -33,6 +33,7 @@ class Settings(BaseSettings):
     default_gemini_model: str = Field(default="gemini-2.0-flash")
     high_quality_gemini_model: str = Field(default="gemini-2.5-flash")
     ocr_gemini_model: str = Field(default="gemini-2.5-flash-lite")
+    gemini_thinking_model: str = Field(default="gemini-2.0-flash-thinking")
     
     # Stripe設定
     stripe_secret_key: str = Field(default="placeholder")
