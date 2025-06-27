@@ -10,9 +10,10 @@
 ## **1. 概要**
 
 ### 1.0. 進捗状況（2025-06-27時点）
-**完了タスク数**: 14/252タスク（5.6%）
+**完了タスク数**: 15/252タスク（6.0%）
 - **環境構築**: 14/16タスク完了（87.5%）
-- **MVP開発**: 14/72タスク完了（19.4%）
+- **データベース基盤**: 1/8タスク完了（12.5%）
+- **MVP開発**: 15/72タスク完了（20.8%）
 
 **完了済みタスク**:
 - ✅ ENV-001: Next.js 15.3.4プロジェクト作成
@@ -29,6 +30,7 @@
 - ✅ ENV-013: 環境変数テンプレート作成
 - ✅ ENV-014: Supabase CLI設定（v2.26.9、Google OAuth対応）
 - ✅ ENV-015: API外部サービス設定（Gemini新SDK、Stripe最新版）
+- ✅ DB-001: Supabaseマイグレーション初期化（PostgreSQL 17、RLS対応）
 
 **🚨 重要な技術更新**:
 - **Gemini SDK移行**: `google-generativeai` → `google-genai` (2025年9月30日までに必須)
@@ -36,8 +38,8 @@
 - **Python開発ツール**: Black/isort/mypy strict mode設定完了
 
 **次の高優先度タスク**:
+- DB-002: 基本テーブル作成（cases、personas、conversation_logs、conversation_messages）
 - ENV-016: CI/CD基本設定
-- DB-001: データベースマイグレーション準備
 
 ### 1.1. タスク表記規則
 - **[ENV]**: 環境構築・設定
@@ -163,10 +165,10 @@
 
 ### **2.2. データベース基盤（8タスク）**
 
-17. **[DB-001]** Supabaseマイグレーション初期化 `P0` `S`
-    - **ファイル**: `supabase/migrations/20240601000001_initial_schema.sql`
-    - usersテーブル作成
-    - **完了条件**: マイグレーション実行成功
+17. **[DB-001]** Supabaseマイグレーション初期化 `P0` `S` ✅ **完了**
+    - **ファイル**: `supabase/migrations/20250627000001_initial_schema.sql`
+    - usersテーブル作成、PostgreSQL 17対応RLS、パフォーマンスインデックス
+    - **完了条件**: マイグレーション実行成功、テストユーザー3件投入確認
 
 18. **[DB-002]** 基本テーブル作成 `P0` `L`
     - **ファイル**: `supabase/migrations/20240601000002_core_tables.sql`
