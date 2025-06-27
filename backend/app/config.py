@@ -71,6 +71,11 @@ class Settings(BaseSettings):
     sql_echo: bool = Field(default=False)
     enable_docs: bool = Field(default=True)
     test_mode: bool = Field(default=False)
+    
+    # Supabase CLI・OAuth設定
+    next_public_site_url: str = Field(default="http://localhost:3000")
+    google_client_id: str = Field(default="placeholder-google-client-id")
+    google_client_secret: str = Field(default="placeholder-google-client-secret")
 
     @field_validator("allowed_origins", mode="before")
     @classmethod

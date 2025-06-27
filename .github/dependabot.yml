@@ -1,0 +1,189 @@
+version: 2
+updates:
+  # Frontend dependencies (Next.js)
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    reviewers:
+      - "Volvyyy"
+    assignees:
+      - "Volvyyy"
+    commit-message:
+      prefix: "chore(frontend)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "frontend"
+    open-pull-requests-limit: 5
+    allow:
+      # Allow version updates for direct dependencies
+      - dependency-type: "direct"
+      # Allow security updates for all dependencies
+      - dependency-type: "indirect"
+        update-type: "security"
+    ignore:
+      # Ignore major version updates for stable packages
+      - dependency-name: "react"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "next"
+        update-types: ["version-update:semver-major"]
+    groups:
+      # Group React ecosystem updates
+      react-ecosystem:
+        patterns:
+          - "react*"
+          - "@types/react*"
+      # Group testing dependencies
+      testing:
+        patterns:
+          - "*jest*"
+          - "@testing-library/*"
+          - "playwright*"
+      # Group linting/formatting tools
+      dev-tools:
+        patterns:
+          - "eslint*"
+          - "prettier*"
+          - "@typescript-eslint/*"
+
+  # Backend dependencies (Python)
+  - package-ecosystem: "pip"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    reviewers:
+      - "Volvyyy"
+    assignees:
+      - "Volvyyy"
+    commit-message:
+      prefix: "chore(backend)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "backend"
+    open-pull-requests-limit: 5
+    allow:
+      # Allow version updates for direct dependencies
+      - dependency-type: "direct"
+      # Allow security updates for all dependencies
+      - dependency-type: "indirect"
+        update-type: "security"
+    ignore:
+      # Ignore major version updates for framework dependencies
+      - dependency-name: "fastapi"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "sqlalchemy"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "pydantic"
+        update-types: ["version-update:semver-major"]
+    groups:
+      # Group FastAPI ecosystem
+      fastapi-ecosystem:
+        patterns:
+          - "fastapi*"
+          - "uvicorn*"
+          - "starlette*"
+      # Group database dependencies
+      database:
+        patterns:
+          - "sqlalchemy*"
+          - "psycopg*"
+          - "alembic*"
+      # Group testing dependencies
+      testing:
+        patterns:
+          - "pytest*"
+          - "httpx"
+          - "requests-mock"
+      # Group dev tools
+      dev-tools:
+        patterns:
+          - "black"
+          - "isort"
+          - "mypy*"
+          - "ruff"
+
+  # Backend Supabase CLI dependencies
+  - package-ecosystem: "npm"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    reviewers:
+      - "Volvyyy"
+    assignees:
+      - "Volvyyy"
+    commit-message:
+      prefix: "chore(backend/cli)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "backend"
+      - "supabase"
+    open-pull-requests-limit: 3
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
+        update-type: "security"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    reviewers:
+      - "Volvyyy"
+    assignees:
+      - "Volvyyy"
+    commit-message:
+      prefix: "chore(ci)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    open-pull-requests-limit: 5
+    groups:
+      # Group security-related actions
+      security-actions:
+        patterns:
+          - "github/codeql-action"
+          - "aquasecurity/trivy-action"
+          - "ossf/scorecard-action"
+      # Group deployment actions
+      deployment-actions:
+        patterns:
+          - "docker/*"
+          - "vercel/*"
+          - "appleboy/*"
+
+  # Docker
+  - package-ecosystem: "docker"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Tokyo"
+    reviewers:
+      - "Volvyyy"
+    assignees:
+      - "Volvyyy"
+    commit-message:
+      prefix: "chore(docker)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "docker"
+    open-pull-requests-limit: 3
