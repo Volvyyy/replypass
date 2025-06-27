@@ -10,10 +10,10 @@
 ## **1. 概要**
 
 ### 1.0. 進捗状況（2025-06-27時点）
-**完了タスク数**: 15/252タスク（6.0%）
+**完了タスク数**: 16/252タスク（6.3%）
 - **環境構築**: 14/16タスク完了（87.5%）
-- **データベース基盤**: 1/8タスク完了（12.5%）
-- **MVP開発**: 15/72タスク完了（20.8%）
+- **データベース基盤**: 2/8タスク完了（25.0%）
+- **MVP開発**: 16/72タスク完了（22.2%）
 
 **完了済みタスク**:
 - ✅ ENV-001: Next.js 15.3.4プロジェクト作成
@@ -31,6 +31,7 @@
 - ✅ ENV-014: Supabase CLI設定（v2.26.9、Google OAuth対応）
 - ✅ ENV-015: API外部サービス設定（Gemini新SDK、Stripe最新版）
 - ✅ DB-001: Supabaseマイグレーション初期化（PostgreSQL 17、RLS対応）
+- ✅ DB-002: 基本テーブル作成（PostgreSQL 17最適化、月次パーティション、GIN索引）
 
 **🚨 重要な技術更新**:
 - **Gemini SDK移行**: `google-generativeai` → `google-genai` (2025年9月30日までに必須)
@@ -38,8 +39,8 @@
 - **Python開発ツール**: Black/isort/mypy strict mode設定完了
 
 **次の高優先度タスク**:
-- DB-002: 基本テーブル作成（cases、personas、conversation_logs、conversation_messages）
-- ENV-016: CI/CD基本設定
+- DB-003: インデックス作成（パフォーマンス重要なカラムにインデックス）
+- API-001: Supabase Auth設定（メール/パスワード認証有効化）
 
 ### 1.1. タスク表記規則
 - **[ENV]**: 環境構築・設定
@@ -170,10 +171,11 @@
     - usersテーブル作成、PostgreSQL 17対応RLS、パフォーマンスインデックス
     - **完了条件**: マイグレーション実行成功、テストユーザー3件投入確認
 
-18. **[DB-002]** 基本テーブル作成 `P0` `L`
-    - **ファイル**: `supabase/migrations/20240601000002_core_tables.sql`
+18. **[DB-002]** 基本テーブル作成 `P0` `L` ✅ **完了**
+    - **ファイル**: `supabase/migrations/20250627000002_core_tables.sql`
     - cases、personas、conversation_logs、conversation_messagesテーブル
-    - **完了条件**: 全テーブル作成、制約設定完了
+    - PostgreSQL 17最適化、月次パーティション、GIN索引、階層的RLS
+    - **完了条件**: 全テーブル作成、制約設定完了、パフォーマンステスト成功
 
 19. **[DB-003]** インデックス作成 `P0` `M`
     - **ファイル**: `supabase/migrations/20240601000003_indexes.sql`
