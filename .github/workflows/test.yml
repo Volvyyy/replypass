@@ -29,7 +29,8 @@ jobs:
         run: npm ci
 
       - name: Patch tsconfig for moduleResolution
-        run: sed -i 's/"moduleResolution": "bundler"/"moduleResolution": "node"/' tsconfig.json
+        run: |
+          sed -i 's/"moduleResolution": "bundler"/"moduleResolution": "node"/' tsconfig.json
 
       - name: TypeScript check
         run: npm run type-check
