@@ -10,24 +10,34 @@
 ## **1. 概要**
 
 ### 1.0. 進捗状況（2025-06-27時点）
-**完了タスク数**: 9/252タスク（3.6%）
-- **環境構築**: 9/16タスク完了（56.3%）
-- **MVP開発**: 9/72タスク完了（12.5%）
+**完了タスク数**: 14/252タスク（5.6%）
+- **環境構築**: 14/16タスク完了（87.5%）
+- **MVP開発**: 14/72タスク完了（19.4%）
 
 **完了済みタスク**:
 - ✅ ENV-001: Next.js 15.3.4プロジェクト作成
 - ✅ ENV-002: Python FastAPIプロジェクト作成  
-- ✅ ENV-004: Git/GitHub設定（リポジトリ作成は未完了）
+- ✅ ENV-003: Supabaseプロジェクト作成・設定
+- ✅ ENV-004: Git/GitHub設定
+- ✅ ENV-004b: GitHubリポジトリ作成（https://github.com/Volvyyy/replypass）
 - ✅ ENV-007: Frontend依存関係インストール
 - ✅ ENV-008: Backend依存関係インストール
 - ✅ ENV-009: TypeScript設定最適化
 - ✅ ENV-010: Tailwind CSS設定（OKLCH対応）
 - ✅ ENV-011: ESLint/Prettier設定
+- ✅ ENV-012: Python設定（Black、isort、mypy、strict=true）
 - ✅ ENV-013: 環境変数テンプレート作成
+- ✅ ENV-014: Supabase CLI設定（v2.26.9、Google OAuth対応）
+- ✅ ENV-015: API外部サービス設定（Gemini新SDK、Stripe最新版）
+
+**🚨 重要な技術更新**:
+- **Gemini SDK移行**: `google-generativeai` → `google-genai` (2025年9月30日までに必須)
+- **Stripe SDK更新**: v8.8.0 → v12.2.0 (Enhanced Payment Element対応)
+- **Python開発ツール**: Black/isort/mypy strict mode設定完了
 
 **次の高優先度タスク**:
-- ENV-003: Supabaseプロジェクト作成・設定
-- ENV-015: API外部サービス設定（Gemini, Stripe）
+- ENV-016: CI/CD基本設定
+- DB-001: データベースマイグレーション準備
 
 ### 1.1. タスク表記規則
 - **[ENV]**: 環境構築・設定
@@ -140,10 +150,11 @@
     - **コマンド**: `supabase init`、`supabase start`
     - **完了条件**: ローカルSupabase起動確認
 
-15. **[ENV-015]** API外部サービス設定 `P0` `M`
-    - Google Gemini API設定
-    - Stripe API設定（テストモード）
-    - **完了条件**: 各APIのテスト呼び出し成功
+15. **[ENV-015]** API外部サービス設定 `P0` `M` ✅ **完了**
+    - Google Gemini API設定（新SDK google-genai 1.22.0対応）
+    - Stripe API設定（最新SDK 12.2.0、Webhook署名検証）
+    - **実装ファイル**: `app/gemini_client.py`, `app/stripe_client.py`
+    - **完了条件**: 各APIクライアントのインポート成功
 
 16. **[ENV-016]** CI/CD基本設定 `P1` `M`
     - **ファイル**: `.github/workflows/test.yml`

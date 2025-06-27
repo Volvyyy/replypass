@@ -12,7 +12,14 @@ Reply Passは、ユーザーの人格とコミュニケーションスタイル�
 
 ## 📋 開発状況
 
-現在MVP開発中（Phase 1 of 3）
+**現在の進捗**: 環境構築ほぼ完了 - MVP開発準備完了（14/252タスク完了、5.6%）
+
+**最新の完了事項**:
+- ✅ フロントエンド・バックエンド基盤構築
+- ✅ Supabase認証システム統合・CLI設定
+- ✅ 最新API SDK実装（Gemini 2025対応、Stripe v12.2.0）
+- ✅ Python開発ツール設定（Black、isort、mypy strict mode）
+- ✅ GitHubリポジトリ設定
 
 詳細は以下のドキュメントを参照：
 - [要件定義書 詳細版](./要件定義書_詳細版.md)
@@ -21,24 +28,30 @@ Reply Passは、ユーザーの人格とコミュニケーションスタイル�
 - [データベース設計書](./データベース設計書.md)
 - [画面設計書](./画面設計書.md)
 
-## 🛠 技術スタック
+## 🛠 技術スタック（実装済み）
 
-### Frontend
-- Next.js 14+ (App Router)
-- TypeScript
-- Tailwind CSS + Shadcn/ui
-- Zustand + TanStack Query
+### Frontend ✅
+- **Next.js 15.3.4** (App Router + TypeScript)
+- **Tailwind CSS v4** (OKLCH color space + Shadcn/ui)
+- **Zustand 5.0.6** + TanStack Query v5.81.2
+- **React Hook Form 7.58.1** + Zod 3.25.67
+- **ESLint 9** + Prettier 3.6.1
 
-### Backend
-- Python 3.11+ + FastAPI
-- SQLAlchemy 2.0+
-- Supabase (PostgreSQL + Auth)
-- Google Gemini API
+### Backend ✅
+- **Python 3.11+** + FastAPI 0.109.1
+- **SQLAlchemy 2.0.23** + Pydantic v2.9.4
+- **Supabase 2.16.0** (PostgreSQL 15+ + Auth + RLS)
+- **Google Gemini API 1.22.0** (新SDK - 2025年対応)
+- **Stripe 12.2.0** (Enhanced Payment Element)
 
-### Infrastructure
-- Vercel (Frontend)
-- Ubuntu VPS (Backend)
-- Stripe (Payment)
+### Infrastructure 🔄
+- **Vercel** (Frontend - 予定)
+- **Ubuntu VPS** (Backend - 予定)
+- **GitHub** (https://github.com/Volvyyy/replypass)
+
+### 🚨 重要な技術更新
+- **Gemini SDK移行必須**: 2025年9月30日までに旧SDK → 新SDK
+- **Stripe最新機能**: Enhanced Payment Element、AI-Powered Features対応
 
 ## 🚦 開発環境セットアップ
 
@@ -52,25 +65,41 @@ Reply Passは、ユーザーの人格とコミュニケーションスタイル�
 
 1. **リポジトリのクローン**
 ```bash
-git clone https://github.com/yourusername/replypass.git
+git clone https://github.com/Volvyyy/replypass.git
 cd replypass
 ```
 
-2. **フロントエンド**
+2. **環境変数設定**
+```bash
+# フロントエンド
+cp frontend/.env.local.example frontend/.env.local
+# バックエンド  
+cp backend/.env.example backend/.env
+# 実際の値に置き換えてください
+```
+
+3. **フロントエンド**
 ```bash
 cd frontend
 npm install
-npm run dev
+npm run check-all  # 型チェック + Lint + フォーマット確認
+npm run dev        # 開発サーバー起動
 ```
 
-3. **バックエンド**
+4. **バックエンド**
 ```bash
 cd backend
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
+python -c "from app.config import validate_settings; validate_settings()"  # 設定確認
 uvicorn app.main:app --reload
 ```
+
+### 📦 パッケージ情報
+- **Google Gemini**: 新SDK `google-genai` (旧 `google-generativeai` は2025年9月30日廃止)
+- **Stripe**: v12.2.0 (Enhanced Payment Element、Webhook署名検証対応)
+- **Supabase**: SSR v0.6.1 (Next.js 15対応)
 
 ## 📝 開発原則
 

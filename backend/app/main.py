@@ -5,6 +5,7 @@ Reply Pass Backend API
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
 from app.config import settings, validate_settings
 
 # 設定の検証
@@ -38,13 +39,10 @@ async def root():
 @app.get("/health")
 async def health_check():
     """詳細ヘルスチェック"""
-    return {
-        "status": "healthy",
-        "service": "reply-pass-api",
-        "version": "1.0.0"
-    }
+    return {"status": "healthy", "service": "reply-pass-api", "version": "1.0.0"}
 
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)

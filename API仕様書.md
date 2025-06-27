@@ -355,26 +355,48 @@ Content-Type: image/png
 
 ## **6. Webhookエンドポイント**
 
-### 6.1. Stripe Webhook
+### 6.1. Stripe Webhook（2025年最新版対応）
 **POST** `/webhooks/stripe`
 
 #### ヘッダー
 ```http
 Stripe-Signature: t=1614556800,v1=abc123...
+Content-Type: application/json
 ```
 
-#### イベントタイプ
-- `checkout.session.completed`
-- `customer.subscription.created`
-- `customer.subscription.updated`
-- `customer.subscription.deleted`
-- `invoice.payment_succeeded`
-- `invoice.payment_failed`
+#### 実装済み機能
+- **署名検証**: Webhook署名の自動検証（セキュリティ強化）
+- **タイムスタンプ検証**: リプレイ攻撃防止
+- **イベント処理**: 各イベントタイプ別の自動処理
+
+#### サポート済みイベントタイプ
+- `checkout.session.completed` - チェックアウト完了時の処理
+- `customer.subscription.created` - サブスクリプション開始
+- `customer.subscription.updated` - プラン変更・ステータス更新
+- `customer.subscription.deleted` - サブスクリプション削除
+- `invoice.payment_succeeded` - 支払い成功
+- `invoice.payment_failed` - 支払い失敗
+
+#### 新機能（Stripe SDK 12.2.0対応）
+- **Enhanced Payment Element**: 強化された決済UI
+- **AI-Powered Features**: 自動化されたBilling機能
+- **新決済手段**: 韓国、強化されたPayPal/Naver Pay対応
 
 #### レスポンス
 ```json
 {
-  "received": true
+  "status": "success",
+  "event_type": "checkout.session.completed",
+  "processed_at": "2025-06-27T12:00:00Z"
+}
+```
+
+#### エラーレスポンス
+```json
+{
+  "status": "error",
+  "error": "Invalid signature",
+  "code": 400
 }
 ```
 

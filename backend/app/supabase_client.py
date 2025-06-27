@@ -2,23 +2,22 @@
 Supabase クライアント設定
 """
 
-from supabase import create_client, Client
+from supabase import Client, create_client
+
 from .config import settings
 
 
 def get_supabase_client() -> Client:
     """Supabase サービスロールクライアントを取得"""
     return create_client(
-        supabase_url=settings.supabase_url,
-        supabase_key=settings.supabase_service_key
+        supabase_url=settings.supabase_url, supabase_key=settings.supabase_service_key
     )
 
 
 def get_supabase_anon_client() -> Client:
     """Supabase 匿名クライアントを取得（フロントエンドと同等）"""
     return create_client(
-        supabase_url=settings.supabase_url,
-        supabase_key=settings.supabase_anon_key
+        supabase_url=settings.supabase_url, supabase_key=settings.supabase_anon_key
     )
 
 

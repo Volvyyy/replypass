@@ -136,13 +136,20 @@ Reply Pass (AlterEgo AI) is an AI-powered message reply generation service that 
 **✅ Completed Tasks** (As of 2025-06-27):
 - ENV-001: Next.js 15.3.4 project created with TypeScript
 - ENV-002: Python FastAPI backend structure initialized
+- ENV-003: Supabase project setup with SSR authentication
 - ENV-004: Git repository initialized with comprehensive .gitignore
+- ENV-004b: GitHub repository created (https://github.com/Volvyyy/replypass)
 - ENV-007: Frontend dependencies installed (Supabase SSR, Shadcn/ui, Zustand, etc.)
 - ENV-008: Backend dependencies installed in virtual environment
 - ENV-009: TypeScript configuration optimized with strict mode
 - ENV-010: Tailwind CSS v4 configured with custom design system
 - ENV-011: ESLint/Prettier configured with import sorting, accessibility rules
 - ENV-013: Environment variable templates created with Pydantic settings
+- ENV-015: API external services setup (Gemini new SDK, Stripe latest version)
+
+**🚨 Critical Technology Updates**:
+- **Gemini SDK Migration**: `google-generativeai` → `google-genai` (mandatory by Sep 30, 2025)
+- **Stripe SDK Update**: v8.8.0 → v12.2.0 (Enhanced Payment Element support)
 **📋 Available Documents**:
 - `要件定義書_詳細版.md` - Complete technical requirements with architecture
 - `データベース設計書.md` - Full database schema with 12 tables, RLS, indexing
@@ -162,13 +169,14 @@ Reply Pass (AlterEgo AI) is an AI-powered message reply generation service that 
 - **Testing**: Jest + React Testing Library (pending), Playwright (pending)
 - **Deployment**: Vercel (planned)
 
-### Backend ✓ Partially Implemented
+### Backend ✓ Implemented
 - **Runtime**: Python 3.11+ with FastAPI 0.109.1
-- **Database**: Supabase 2.3.4 (PostgreSQL 15+) with Row Level Security
+- **Database**: Supabase 2.16.0 (PostgreSQL 15+) with Row Level Security
 - **ORM**: SQLAlchemy 2.0.23 with Pydantic v2.9.4 validation
 - **Settings**: pydantic-settings 2.3.0 for environment management
-- **LLM**: Google Gemini API 0.8.4 (2.0 Flash, 2.5 Flash, 2.5 Flash-Lite)
-- **Payment**: Stripe 11.3.0 with webhooks
+- **LLM**: Google Gemini API 1.22.0 (new SDK, mandatory by Sep 2025)
+- **Payment**: Stripe 12.2.0 with enhanced webhooks and security
+- **API Clients**: Gemini, Stripe, Supabase clients implemented
 - **Testing**: pytest 8.3.4 + pytest-asyncio 0.25.1
 - **Deployment**: Ubuntu VPS with Docker (planned)
 
