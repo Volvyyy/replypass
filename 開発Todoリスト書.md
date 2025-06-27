@@ -10,11 +10,12 @@
 ## **1. 概要**
 
 ### 1.0. 進捗状況（2025-06-27時点）
-**完了タスク数**: 23/252タスク（9.1%）
+**完了タスク数**: 24/252タスク（9.5%）
 - **環境構築**: 16/16タスク完了（100%）
 - **データベース基盤**: 4/8タスク完了（50.0%） ✅ **RLS完全実装**
 - **認証システム基盤**: 4/8タスク完了（50.0%）
-- **MVP開発**: 23/72タスク完了（31.9%）
+- **バックエンド基盤**: 1/4タスク完了（25.0%） ✅ **FastAPI 2025強化版完了**
+- **MVP開発**: 24/72タスク完了（33.3%）
 
 **🚨 重要な技術更新**:
 - **Gemini SDK移行**: `google-generativeai` → `google-genai` (2025年9月30日までに必須)
@@ -22,9 +23,9 @@
 - **RLSセキュリティ**: 12テーブル完全対応（セキュリティスコア95/100）
 
 **次の高優先度タスク**:
-- BE-001: FastAPI基本設定（CORS、セキュリティミドルウェア）
 - API-002: ユーザー登録API実装
-- BE-002: Pydantic Settingsクラス実装
+- BE-002: Pydantic Settingsクラス実装  
+- API-003: ケース一覧取得API
 
 ### 1.1. タスク表記規則
 - **[ENV]**: 環境構築・設定
@@ -243,10 +244,11 @@
     - メール送信・新パスワード設定
     - **完了条件**: パスワード変更フロー完了
 
-30. **[BE-001]** JWT認証ミドルウェア実装 `1` `M`
-    - **ファイル**: `backend/app/middleware/auth.py`
-    - Supabase JWTトークン検証
-    - **完了条件**: 保護されたエンドポイントへのアクセス制御確認
+30. **[BE-001]** FastAPI基本設定（CORS、セキュリティミドルウェア） `1` `M` ✅ **完了**
+    - **ファイル**: `backend/app/middleware/security.py`, `backend/app/middleware/cors_handler.py`, `backend/app/middleware/request_validator.py`, `backend/app/middleware/logging_middleware.py`, `backend/app/core/security.py`
+    - 2025年セキュリティベストプラクティス：SecurityHeadersMiddleware、AdvancedCORSMiddleware、RequestValidationMiddleware、StructuredLoggingMiddleware
+    - セキュリティ機能：CSP、HSTS、Permissions Policy、Cross-Origin policies、SQLインジェクション・XSS対策、構造化ログ、レート制限階層化
+    - **完了条件**: 14テスト成功、セキュリティヘッダー完全実装、エンタープライズグレードの堅牢性実現
 
 31. **[FE-005]** 認証ガード実装 `1` `M`
     - **ファイル**: `frontend/middleware.ts`

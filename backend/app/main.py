@@ -5,18 +5,27 @@ Reply Pass Backend API
 Compatible with Supabase Auth 2025 and Next.js 15
 """
 
-from fastapi import FastAPI, Depends
-from fastapi.middleware.cors import CORSMiddleware
 import logging
+from datetime import datetime
 
+from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.responses import JSONResponse
+
+from app.auth.dependencies import get_current_user
 from app.config import settings, validate_settings
 from app.middleware.auth import AuthMiddleware, RateLimitMiddleware
-from app.auth.dependencies import get_current_user
+from app.middleware.cors_handler import AdvancedCORSMiddleware
+from app.middleware.logging_middleware import StructuredLoggingMiddleware
+from app.middleware.request_validator import RequestValidationMiddleware
+from app.middleware.security import SecurityHeadersMiddleware
 
 # Configure logging
 logging.basicConfig(
     level=getattr(logging, settings.log_level.upper(), logging.INFO),
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -29,58 +38,131 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/docs" if settings.enable_docs else None,
     redoc_url="/redoc" if settings.enable_docs else None,
+    openapi_url="/openapi.json" if settings.enable_docs else None,
     debug=settings.debug_mode,
+    swagger_ui_parameters=(
+        {
+            "docExpansion": "none",
+            "deepLinking": True,
+            "persistAuthorization": True,
+            "displayOperationId": True,
+        }
+        if settings.enable_docs
+        else None
+    ),
 )
 
-# Add security middleware (order matters!)
+# Middleware order is critical! (Applied in reverse order)
+# 1. Logging (outermost - logs everything)
+app.add_middleware(StructuredLoggingMiddleware)
+
+# 2. Security headers
+app.add_middleware(SecurityHeadersMiddleware)
+
+# 3. Gzip compression
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+# 4. Trusted host validation (production only)
+if settings.environment == "production":
+    app.add_middleware(
+        TrustedHostMiddleware,
+        allowed_hosts=(
+            settings.allowed_hosts if hasattr(settings, "allowed_hosts") else ["*"]
+        ),
+    )
+
+# 5. Request validation
+app.add_middleware(RequestValidationMiddleware)
+
+# 6. Rate limiting
+app.add_middleware(
+    RateLimitMiddleware, requests_per_minute=settings.basic_rate_limit_per_minute
+)
+
+# 7. Authentication
 app.add_middleware(AuthMiddleware)
-app.add_middleware(
-    RateLimitMiddleware, 
-    requests_per_minute=int(getattr(settings, 'basic_rate_limit_per_minute', 60))
-)
 
-# CORS設定 (after auth middleware)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.allowed_origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allow_headers=["*"],
-    expose_headers=["X-Response-Time", "X-API-Version"],
-)
+# 8. CORS (innermost - needs to see authenticated requests)
+app.add_middleware(AdvancedCORSMiddleware)
+
+
+@app.on_event("startup")
+async def startup_event():
+    """
+    Application startup tasks
+    """
+    logger.info(f"Starting Reply Pass API v1.0.0 in {settings.environment} mode")
+    logger.info(f"CORS allowed origins: {settings.allowed_origins}")
+    logger.info(f"Rate limiting: {settings.basic_rate_limit_per_minute} req/min")
+
+    # TODO: Initialize database connection pool
+    # TODO: Initialize Redis connection
+    # TODO: Verify external service connections
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """
+    Application shutdown tasks
+    """
+    logger.info("Shutting down Reply Pass API")
+
+    # TODO: Close database connections
+    # TODO: Close Redis connections
+    # TODO: Flush any pending logs
 
 
 @app.get("/")
 async def root():
     """ヘルスチェックエンドポイント"""
     return {
-        "message": "Reply Pass API v1.0.0", 
+        "message": "Reply Pass API v1.0.0",
         "status": "healthy",
-        "auth": "Supabase Auth 2025 Ready"
+        "auth": "Supabase Auth 2025 Ready",
+        "environment": settings.environment,
     }
 
 
 @app.get("/health")
 async def health_check():
     """詳細ヘルスチェック"""
-    return {
-        "status": "healthy", 
-        "service": "reply-pass-api", 
+    health_status = {
+        "status": "healthy",
+        "service": "reply-pass-api",
         "version": "1.0.0",
+        "environment": settings.environment,
+        "timestamp": datetime.utcnow().isoformat(),
         "features": {
             "supabase_auth": True,
             "jwt_validation": True,
             "rate_limiting": True,
-            "security_headers": True
-        }
+            "security_headers": True,
+            "request_validation": True,
+            "structured_logging": True,
+            "cors_enabled": True,
+        },
+        "middleware": {
+            "security_headers": "active",
+            "cors": "configured",
+            "rate_limiting": "active",
+            "request_validation": "active",
+            "logging": "active",
+            "compression": "gzip",
+        },
     }
+
+    # TODO: Add database health check
+    # TODO: Add Redis health check
+    # TODO: Add external service health checks
+
+    return health_status
 
 
 @app.get("/auth/profile")
 async def get_profile(current_user: dict = Depends(get_current_user)):
     """
     Get authenticated user profile
-    
+
     @security Requires valid Supabase JWT token
     @returns User profile information from JWT claims
     """
@@ -96,7 +178,7 @@ async def get_profile(current_user: dict = Depends(get_current_user)):
 async def verify_token(current_user: dict = Depends(get_current_user)):
     """
     Verify JWT token validity
-    
+
     @security Requires valid Supabase JWT token
     @returns Token verification status and user info
     """
@@ -109,7 +191,56 @@ async def verify_token(current_user: dict = Depends(get_current_user)):
     }
 
 
+# Error handlers
+@app.exception_handler(400)
+async def bad_request_handler(request, exc):
+    return JSONResponse(
+        status_code=400, content={"error": "Bad request", "detail": str(exc)}
+    )
+
+
+@app.exception_handler(401)
+async def unauthorized_handler(request, exc):
+    return JSONResponse(
+        status_code=401,
+        content={"error": "Unauthorized", "detail": "Authentication required"},
+    )
+
+
+@app.exception_handler(403)
+async def forbidden_handler(request, exc):
+    return JSONResponse(
+        status_code=403,
+        content={"error": "Forbidden", "detail": "Insufficient permissions"},
+    )
+
+
+@app.exception_handler(404)
+async def not_found_handler(request, exc):
+    return JSONResponse(
+        status_code=404, content={"error": "Not found", "detail": "Resource not found"}
+    )
+
+
+@app.exception_handler(500)
+async def internal_error_handler(request, exc):
+    logger.error(f"Internal server error: {exc}")
+    return JSONResponse(
+        status_code=500,
+        content={
+            "error": "Internal server error",
+            "detail": "An unexpected error occurred",
+        },
+    )
+
+
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(
+        "app.main:app",
+        host=settings.host,
+        port=settings.port,
+        reload=settings.debug_mode,
+        log_level=settings.log_level.lower(),
+    )

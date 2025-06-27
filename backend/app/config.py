@@ -54,11 +54,64 @@ class Settings(BaseSettings):
     allowed_origins: List[str] = Field(
         default=["http://localhost:3000", "http://localhost:3001"]
     )
+    cors_allow_methods: List[str] = Field(
+        default=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+    )
+    cors_allow_headers: List[str] = Field(
+        default=[
+            "Accept",
+            "Accept-Language",
+            "Content-Language",
+            "Content-Type",
+            "Authorization",
+            "X-Requested-With",
+            "X-API-Key",
+            "User-Agent",
+            "X-CSRF-Token",
+            "X-Client-Version",
+        ]
+    )
+    cors_expose_headers: List[str] = Field(
+        default=[
+            "X-Response-Time",
+            "X-API-Version",
+            "X-RateLimit-Remaining",
+            "X-RateLimit-Reset",
+            "X-Request-ID",
+        ]
+    )
 
-    # レート制限設定
+    # セキュリティ設定（2025年強化版）
+    csp_policy: str = Field(
+        default="default-src 'none'; script-src 'none'; style-src 'none'; img-src 'none'; font-src 'none'; connect-src 'none'; frame-ancestors 'none'; base-uri 'none';"
+    )
+    permissions_policy: str = Field(
+        default="accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+    )
+
+    # Cross-Origin policies (2025年標準)
+    cross_origin_embedder_policy: str = Field(default="require-corp")
+    cross_origin_opener_policy: str = Field(default="same-origin")
+    cross_origin_resource_policy: str = Field(default="cross-origin")
+
+    # レート制限設定（階層化）
     rate_limit_backend: str = Field(default="memory")
     basic_rate_limit_per_minute: int = Field(default=60)
     generation_rate_limit_per_minute: int = Field(default=5)
+    auth_rate_limit_per_minute: int = Field(default=10)
+    upload_rate_limit_per_minute: int = Field(default=3)
+    webhook_rate_limit_per_minute: int = Field(default=100)
+
+    # エンドポイント別レート制限設定
+    rate_limits: dict[str, int] = Field(
+        default={
+            "/api/auth/": 10,
+            "/api/upload/": 3,
+            "/api/generate/": 5,
+            "/api/webhooks/": 100,
+            "default": 60,
+        }
+    )
 
     # ファイルアップロード設定
     max_file_size: int = Field(default=10485760)  # 10MB
@@ -71,7 +124,7 @@ class Settings(BaseSettings):
     sql_echo: bool = Field(default=False)
     enable_docs: bool = Field(default=True)
     test_mode: bool = Field(default=False)
-    
+
     # Supabase CLI・OAuth設定
     next_public_site_url: str = Field(default="http://localhost:3000")
     google_client_id: str = Field(default="placeholder-google-client-id")
@@ -79,14 +132,35 @@ class Settings(BaseSettings):
 
     @field_validator("allowed_origins", mode="before")
     @classmethod
-    def parse_allowed_origins(cls, v):
+    def parse_allowed_origins(cls, v: str | list[str]) -> list[str]:
         if isinstance(v, str):
             return [item.strip() for item in v.split(",")]
         return v
 
     @field_validator("allowed_file_types", mode="before")
     @classmethod
-    def parse_allowed_file_types(cls, v):
+    def parse_allowed_file_types(cls, v: str | list[str]) -> list[str]:
+        if isinstance(v, str):
+            return [item.strip() for item in v.split(",")]
+        return v
+
+    @field_validator("cors_allow_methods", mode="before")
+    @classmethod
+    def parse_cors_allow_methods(cls, v: str | list[str]) -> list[str]:
+        if isinstance(v, str):
+            return [item.strip().upper() for item in v.split(",")]
+        return v
+
+    @field_validator("cors_allow_headers", mode="before")
+    @classmethod
+    def parse_cors_allow_headers(cls, v: str | list[str]) -> list[str]:
+        if isinstance(v, str):
+            return [item.strip() for item in v.split(",")]
+        return v
+
+    @field_validator("cors_expose_headers", mode="before")
+    @classmethod
+    def parse_cors_expose_headers(cls, v: str | list[str]) -> list[str]:
         if isinstance(v, str):
             return [item.strip() for item in v.split(",")]
         return v
@@ -103,7 +177,7 @@ settings = Settings()
 
 
 # 設定の検証とログ出力
-def validate_settings():
+def validate_settings() -> None:
     """設定の検証"""
     required_fields = [
         "supabase_url",

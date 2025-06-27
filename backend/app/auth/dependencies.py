@@ -6,12 +6,13 @@ Compatible with Supabase Auth 2025
 @security Implements secure user context extraction from JWT tokens
 """
 
+import logging
 import os
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from jose import jwt, JWTError
-import logging
+from jose import JWTError, jwt
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ async def get_current_user(
 ) -> Dict[str, Any]:
     """
     Extract current user information from JWT token
-    
+
     @param credentials: Authorization credentials from request header
     @returns: User context dictionary with user_id, email, role, etc.
     @raises HTTPException: If authentication fails or token is invalid
@@ -43,7 +44,7 @@ async def get_current_user(
             logger.error("SUPABASE_JWT_SECRET environment variable not set")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Authentication configuration error"
+                detail="Authentication configuration error",
             )
 
         # Decode and validate JWT token
@@ -59,25 +60,25 @@ async def get_current_user(
                 "verify_exp": True,
                 "require_aud": True,
                 "require_exp": True,
-            }
+            },
         )
 
         # Extract user information from JWT payload
         user_id = payload.get("sub")
         email = payload.get("email")
         role = payload.get("role", "authenticated")
-        
+
         # Validate required fields
         if not user_id:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token: missing user ID"
+                detail="Invalid token: missing user ID",
             )
 
         # Extract additional user metadata
         user_metadata = payload.get("user_metadata", {})
         app_metadata = payload.get("app_metadata", {})
-        
+
         return {
             "user_id": user_id,
             "email": email,
@@ -95,13 +96,13 @@ async def get_current_user(
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authentication token",
-            headers={"WWW-Authenticate": "Bearer"}
+            headers={"WWW-Authenticate": "Bearer"},
         )
     except Exception as e:
         logger.error(f"Unexpected authentication error: {str(e)}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Authentication processing error"
+            detail="Authentication processing error",
         )
 
 
@@ -110,7 +111,7 @@ async def get_current_user_optional(
 ) -> Optional[Dict[str, Any]]:
     """
     Extract current user information from JWT token (optional)
-    
+
     @param credentials: Authorization credentials from request header
     @returns: User context dictionary if authenticated, None if not authenticated
     @note: Does not raise exceptions for missing authentication
@@ -127,43 +128,46 @@ async def get_current_user_optional(
 def require_roles(*required_roles: str):
     """
     Dependency factory for role-based access control
-    
+
     @param required_roles: List of roles that are allowed to access the endpoint
     @returns: Dependency function that validates user role
     @example: @app.get("/admin", dependencies=[Depends(require_roles("admin", "moderator"))])
     """
-    async def role_checker(current_user: Dict[str, Any] = Depends(get_current_user)) -> Dict[str, Any]:
+
+    async def role_checker(
+        current_user: Dict[str, Any] = Depends(get_current_user)
+    ) -> Dict[str, Any]:
         user_role = current_user.get("role", "authenticated")
-        
+
         if user_role not in required_roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Insufficient permissions. Required roles: {', '.join(required_roles)}"
+                detail=f"Insufficient permissions. Required roles: {', '.join(required_roles)}",
             )
-        
+
         return current_user
-    
+
     return role_checker
 
 
 def require_user_id(user_id_field: str = "user_id"):
     """
     Dependency factory for user-specific resource access control
-    
+
     @param user_id_field: Field name in the path parameters containing the user ID
     @returns: Dependency function that validates user owns the resource
     @example: @app.get("/users/{user_id}/profile", dependencies=[Depends(require_user_id())])
     """
+
     async def user_id_checker(
-        path_user_id: str,
-        current_user: Dict[str, Any] = Depends(get_current_user)
+        path_user_id: str, current_user: Dict[str, Any] = Depends(get_current_user)
     ) -> Dict[str, Any]:
         if current_user["user_id"] != path_user_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Access denied: can only access your own resources"
+                detail="Access denied: can only access your own resources",
             )
-        
+
         return current_user
-    
+
     return user_id_checker

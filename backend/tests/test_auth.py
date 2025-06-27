@@ -2,17 +2,17 @@
 Test cases for Supabase Auth integration
 """
 
-import pytest
 import os
-from unittest.mock import patch, MagicMock
+import time
+from unittest.mock import MagicMock, patch
+
+import pytest
 from fastapi.testclient import TestClient
 from jose import jwt
-import time
 
-from app.main import app
 from app.auth.dependencies import get_current_user
 from app.auth.jwt_bearer import JWTBearer
-
+from app.main import app
 
 client = TestClient(app)
 
@@ -54,7 +54,7 @@ def test_protected_endpoint_with_invalid_token():
 def test_jwt_bearer_validation():
     """Test JWT Bearer validation logic"""
     jwt_bearer = JWTBearer()
-    
+
     # Test JWT verification with mock payload
     test_payload = {
         "sub": "test-user-id",
@@ -63,16 +63,12 @@ def test_jwt_bearer_validation():
         "aud": "authenticated",
         "iss": "test-issuer",
         "iat": int(time.time()),
-        "exp": int(time.time()) + 3600
+        "exp": int(time.time()) + 3600,
     }
-    
+
     # Create test token
-    test_token = jwt.encode(
-        test_payload,
-        "test-secret-key",
-        algorithm="HS256"
-    )
-    
+    test_token = jwt.encode(test_payload, "test-secret-key", algorithm="HS256")
+
     # Verify token
     result = jwt_bearer.verify_jwt(test_token)
     assert result is not None
@@ -92,17 +88,13 @@ def test_protected_endpoint_with_valid_token():
         "iss": "test-issuer",
         "iat": int(time.time()),
         "exp": int(time.time()) + 3600,
-        "user_metadata": {"display_name": "Test User"}
+        "user_metadata": {"display_name": "Test User"},
     }
-    
-    test_token = jwt.encode(
-        test_payload,
-        "test-secret-key",
-        algorithm="HS256"
-    )
-    
+
+    test_token = jwt.encode(test_payload, "test-secret-key", algorithm="HS256")
+
     headers = {"Authorization": f"Bearer {test_token}"}
-    
+
     # Test profile endpoint
     response = client.get("/auth/profile", headers=headers)
     assert response.status_code == 200
@@ -110,7 +102,7 @@ def test_protected_endpoint_with_valid_token():
     assert data["user_id"] == "test-user-id"
     assert data["email"] == "test@example.com"
     assert data["role"] == "authenticated"
-    
+
     # Test verify endpoint
     response = client.get("/auth/verify", headers=headers)
     assert response.status_code == 200
@@ -122,7 +114,7 @@ def test_protected_endpoint_with_valid_token():
 def test_security_headers():
     """Test that security headers are properly set"""
     response = client.get("/health")
-    
+
     # Check security headers
     assert response.headers["X-Content-Type-Options"] == "nosniff"
     assert response.headers["X-Frame-Options"] == "DENY"
@@ -137,7 +129,7 @@ def test_cors_headers():
     # Use a simple GET request instead of OPTIONS for testing
     response = client.get("/health")
     assert response.status_code == 200
-    
+
     # CORS headers would be visible in browser environment
     # Note: TestClient doesn't fully simulate browser CORS behavior
 
@@ -146,13 +138,13 @@ def test_rate_limiting():
     """Test rate limiting functionality"""
     # Note: This is a basic test - full rate limiting testing would require
     # more sophisticated mocking of the middleware
-    
+
     # Make multiple requests quickly
     responses = []
     for _ in range(5):
         response = client.get("/health")
         responses.append(response.status_code)
-    
+
     # Should not hit rate limit with default settings in test
     assert all(status == 200 for status in responses)
 
@@ -163,19 +155,15 @@ def test_jwt_token_expiration():
     # Create expired token
     expired_payload = {
         "sub": "test-user-id",
-        "email": "test@example.com", 
+        "email": "test@example.com",
         "role": "authenticated",
         "aud": "authenticated",
         "iat": int(time.time()) - 7200,  # 2 hours ago
-        "exp": int(time.time()) - 3600   # 1 hour ago (expired)
+        "exp": int(time.time()) - 3600,  # 1 hour ago (expired)
     }
-    
-    expired_token = jwt.encode(
-        expired_payload,
-        "test-secret-key",
-        algorithm="HS256"
-    )
-    
+
+    expired_token = jwt.encode(expired_payload, "test-secret-key", algorithm="HS256")
+
     headers = {"Authorization": f"Bearer {expired_token}"}
     response = client.get("/auth/profile", headers=headers)
     assert response.status_code == 401
@@ -187,18 +175,16 @@ def test_jwt_invalid_audience():
     invalid_aud_payload = {
         "sub": "test-user-id",
         "email": "test@example.com",
-        "role": "authenticated", 
+        "role": "authenticated",
         "aud": "invalid-audience",  # Wrong audience
         "iat": int(time.time()),
-        "exp": int(time.time()) + 3600
+        "exp": int(time.time()) + 3600,
     }
-    
+
     invalid_token = jwt.encode(
-        invalid_aud_payload,
-        "test-secret-key",
-        algorithm="HS256"
+        invalid_aud_payload, "test-secret-key", algorithm="HS256"
     )
-    
+
     headers = {"Authorization": f"Bearer {invalid_token}"}
     response = client.get("/auth/profile", headers=headers)
     assert response.status_code == 401
