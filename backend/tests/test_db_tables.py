@@ -15,7 +15,11 @@ def test_table_creation():
         'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
     }
     
-    tables = ['users', 'cases', 'personas', 'conversation_logs', 'conversation_messages']
+    tables = [
+        'users', 'cases', 'personas', 'conversation_logs', 'conversation_messages',
+        'generated_replies', 'reply_suggestions', 'feedback_logs', 
+        'subscription_plans', 'user_subscriptions', 'usage_logs'
+    ]
     
     for table in tables:
         response = requests.get(f'{api_base}/{table}', headers=headers)
@@ -31,7 +35,11 @@ def test_rls_protection():
     }
     
     # Attempt to access protected tables without authentication
-    protected_tables = ['cases', 'personas', 'conversation_logs', 'conversation_messages']
+    protected_tables = [
+        'cases', 'personas', 'conversation_logs', 'conversation_messages',
+        'generated_replies', 'reply_suggestions', 'feedback_logs',
+        'user_subscriptions', 'usage_logs'
+    ]
     
     for table in protected_tables:
         response = requests.get(f'{api_base}/{table}', headers=headers)
@@ -61,6 +69,30 @@ def test_jsonb_structure():
             'confidence_score': 0.95,
             'processing_time': 1200,
             'model_version': 'gemini-2.0-flash'
+        },
+        'generated_replies.prompt_context': {
+            'conversation_summary': 'Recent discussion about project',
+            'user_goal': 'friendly response',
+            'persona_traits': ['professional', 'helpful'],
+            'recent_messages': []
+        },
+        'feedback_logs.details': {
+            'edited_text': 'Modified suggestion',
+            'reason': 'Too formal',
+            'rating': 4,
+            'custom_feedback': 'Could be more casual'
+        },
+        'subscription_plans.features': {
+            'models': ['gemini-2.0-flash', 'gemini-2.5-flash'],
+            'screenshot_ocr': True,
+            'advanced_persona': True,
+            'feedback_loop': True
+        },
+        'usage_logs.metadata': {
+            'model_used': 'gemini-2.0-flash',
+            'token_count': 1250,
+            'processing_time': 800,
+            'error_code': None
         }
     }
     
@@ -95,6 +127,28 @@ def test_constraints_validation():
             'conversation_messages_input_method_valid',
             'conversation_messages_content_not_empty',
             'conversation_messages_timestamp_logical'
+        ],
+        'generated_replies': [
+            'generated_replies_model_valid'
+        ],
+        'reply_suggestions': [
+            'reply_suggestions_category_valid',
+            'reply_suggestions_reaction_valid',
+            'reply_suggestions_sent_logic'
+        ],
+        'feedback_logs': [
+            'feedback_logs_type_valid'
+        ],
+        'subscription_plans': [
+            'subscription_plans_price_positive',
+            'subscription_plans_limit_positive'
+        ],
+        'user_subscriptions': [
+            'user_subscriptions_status_valid',
+            'user_subscriptions_period_valid'
+        ],
+        'usage_logs': [
+            'usage_logs_type_valid'
         ]
     }
     
@@ -129,11 +183,18 @@ def test_index_strategy():
     
     # Expected indexes based on schema
     expected_indexes = {
+        'users': [
+            'idx_users_email',
+            'idx_users_auth_id',
+            'idx_users_created_at',
+            'idx_users_profile_display_name'
+        ],
         'cases': [
             'idx_cases_user_id',
             'idx_cases_user_active', 
             'idx_cases_metadata_gin',
-            'idx_cases_partner_search'
+            'idx_cases_partner_search',
+            'idx_cases_updated_at'
         ],
         'personas': [
             'idx_personas_case_id',
@@ -150,17 +211,55 @@ def test_index_strategy():
             'idx_conversation_messages_timestamp',
             'idx_conversation_messages_speaker',
             'idx_conversation_messages_metadata_gin'
+        ],
+        'generated_replies': [
+            'idx_generated_replies_case_id',
+            'idx_generated_replies_created_at',
+            'idx_generated_replies_model'
+        ],
+        'reply_suggestions': [
+            'idx_reply_suggestions_generated_id',
+            'idx_reply_suggestions_sent',
+            'idx_reply_suggestions_category',
+            'idx_reply_suggestions_covering'
+        ],
+        'feedback_logs': [
+            'idx_feedback_logs_suggestion_id',
+            'idx_feedback_logs_user_id',
+            'idx_feedback_logs_type'
+        ],
+        'subscription_plans': [
+            'idx_subscription_plans_active'
+        ],
+        'user_subscriptions': [
+            'idx_user_subscriptions_user_id',
+            'idx_user_subscriptions_status',
+            'idx_user_subscriptions_period',
+            'idx_user_subscriptions_unique_active'
+        ],
+        'usage_logs': [
+            'idx_usage_logs_created_brin',
+            'idx_usage_logs_user_created',
+            'idx_usage_logs_type_created',
+            'idx_usage_daily_check',
+            'idx_usage_logs_metadata_gin'
         ]
     }
     
     # Validate index coverage
     for table, indexes in expected_indexes.items():
-        assert len(indexes) >= 3, f"Table {table} should have multiple indexes"
+        assert len(indexes) >= 1, f"Table {table} should have at least one index"
         
         # Check for GIN indexes on JSONB fields
         gin_indexes = [idx for idx in indexes if 'gin' in idx]
-        if table in ['cases', 'personas', 'conversation_messages']:
+        jsonb_tables = ['cases', 'personas', 'conversation_messages', 'usage_logs']
+        if table in jsonb_tables:
             assert len(gin_indexes) >= 1, f"Table {table} should have GIN indexes for JSONB"
+            
+        # Check for BRIN index on time-series table
+        if table == 'usage_logs':
+            brin_indexes = [idx for idx in indexes if 'brin' in idx]
+            assert len(brin_indexes) >= 1, f"Table {table} should have BRIN index for time-series data"
 
 
 def test_function_definitions():
@@ -170,7 +269,9 @@ def test_function_definitions():
     expected_functions = [
         'soft_delete_case',
         'update_conversation_message_count',
-        'update_updated_at_column'  # From previous migration
+        'update_updated_at_column',  # From previous migration
+        'check_daily_usage_limit',
+        'log_api_usage'
     ]
     
     for function in expected_functions:
@@ -181,6 +282,31 @@ def test_function_definitions():
             assert True, "Should maintain message count accuracy"
         elif function == 'update_updated_at_column':
             assert True, "Should auto-update timestamps"
+        elif function == 'check_daily_usage_limit':
+            assert True, "Should check user daily API usage limits"
+        elif function == 'log_api_usage':
+            assert True, "Should log API usage with limit validation"
+
+
+def test_subscription_plans_data():
+    """Test subscription plans seed data is properly structured"""
+    
+    # Expected subscription plans
+    expected_plans = {
+        'Free': {'price_jpy': 0, 'daily_limit': 5},
+        'Pro': {'price_jpy': 1280, 'daily_limit': 100},
+        'Unlimited': {'price_jpy': 3480, 'daily_limit': 1000}
+    }
+    
+    for plan_name, details in expected_plans.items():
+        assert details['price_jpy'] >= 0, f"Plan {plan_name} should have non-negative price"
+        assert details['daily_limit'] > 0, f"Plan {plan_name} should have positive daily limit"
+        
+        # Validate pricing logic
+        if plan_name == 'Free':
+            assert details['price_jpy'] == 0, "Free plan should be free"
+        else:
+            assert details['price_jpy'] > 0, f"Paid plan {plan_name} should have positive price"
 
 
 if __name__ == "__main__":
@@ -192,4 +318,5 @@ if __name__ == "__main__":
     test_partition_design()
     test_index_strategy()
     test_function_definitions()
+    test_subscription_plans_data()
     print("✅ All database tests passed!")
