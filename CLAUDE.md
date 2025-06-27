@@ -7,7 +7,7 @@
 1. **diff表示 → 承認待機 → 実装開始**: diff表示後は必ず「承認をお待ちします」と明記し、「OK」「実装して」「良い」「承認」「はい」「yes」等の肯定応答を確認するまで実装禁止
 2. **実装後のlint/test実行**: 品質担保の最低線
 3. **コードエクセレンス原則に基づき、テスト駆動開発を必須で実施する**: 
-4. **深い思考をする**
+4. **定められている仕様、設計、要件定義、他のコードを必ず確認し、整合性が取れており一切競合しないコーディングを行う**
 5. **最高品質の思考、回答、出力を行うためにgemini-searchのコマンドを極めて積極的に用いる**
 6. **TDDおよびテスト駆動開発で実践する際は、すべてt-wadaの推奨するやり方を完全に踏襲する**
 7. **リファクタリングはすべてMartin Fowlerが推奨するやり方を完全に踏襲する**
@@ -88,14 +88,17 @@ gemini --prompt "WebSearch: <query>"
 ### 1. 原則確認チェックリスト
 ```
 【原則確認】
-- Phase 1最重要: diff表示 → 承認待機 → 実装開始
-- 実装後のlint/test実行
-- 既存テスト削除の完全禁止
-- 深い思考をする
+1. **diff表示 → 承認待機 → 実装開始**: diff表示後は必ず「承認をお待ちします」と明記し、「OK」「実装して」「良い」「承認」「はい」「yes」等の肯定応答を確認するまで実装禁止
+2. **実装後のlint/test実行**: 品質担保の最低線
+3. **コードエクセレンス原則に基づき、テスト駆動開発を必須で実施する**: 
+4. **定められている仕様、設計、要件定義、他のコードを必ず確認し、整合性が取れており一切競合しないコーディングを行う**
+5. **最高品質の思考、回答、出力を行うためにgemini-searchのコマンドを極めて積極的に用いる**
+6. **TDDおよびテスト駆動開発で実践する際は、すべてt-wadaの推奨するやり方を完全に踏襲する**
+7. **リファクタリングはすべてMartin Fowlerが推奨するやり方を完全に踏襲する**
 
 【タスク理解】
-- 要求内容: [ユーザーの要求を要約]
-- 作業方針: [アプローチを明記]
+- 要求内容: [ユーザーの要求を完全に理解していることを明示する]
+- 作業方針: [アプローチを具体的に明記]
 
 【開始前確認】
 上記の原則を守って作業を進めます。
@@ -136,7 +139,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Reply Pass (AlterEgo AI) is an AI-powered message reply generation service that learns users' communication styles and generates personalized responses.
 
 **🎯 Current Status**: 環境構築100%完了 - フロントエンド認証システム完全実装
-**✅ Completed Tasks** (As of 2025-06-27 - 22/252タスク完了、8.7%):
+**✅ Completed Tasks** (As of 2025-06-27 - 23/252タスク完了、9.1%):
 - ENV-001: Next.js 15.3.4 project created with TypeScript
 - ENV-002: Python FastAPI backend structure initialized
 - ENV-003: Supabase project setup with SSR authentication
@@ -155,6 +158,7 @@ Reply Pass (AlterEgo AI) is an AI-powered message reply generation service that 
 - DB-001: Supabase migration initialization (PostgreSQL 17, RLS enabled)
 - DB-002: Basic tables created (PostgreSQL 17 optimization, partitioning, GIN indexes)
 - DB-003: Remaining tables created (12 tables complete, BRIN/GIN/covering indexes, usage limit functions)
+- DB-004: RLS policies implementation (12 tables complete, security score 95/100, persona_analyses table added)
 - API-001: Supabase Auth setup (@supabase/ssr 2025, JWT validation, security headers, 11 tests passing)
 - FE-001: Authentication context created (React Context + Zustand global state management)
 - FE-002: Login screen implementation (React Hook Form 7.58.1 + Zod 3.25.67 validation)
@@ -167,9 +171,9 @@ Reply Pass (AlterEgo AI) is an AI-powered message reply generation service that 
 
 **📈 Current Progress**:
 - **Environment Setup**: 16/16 tasks (100%) ✅ **完了**
-- **Database Foundation**: 3/8 tasks (37.5%) 
+- **Database Foundation**: 4/8 tasks (50.0%) ✅ **RLS完全実装**
 - **Authentication System**: 4/8 tasks (50.0%)
-- **Overall MVP**: 22/72 tasks (30.6%)
+- **Overall MVP**: 23/72 tasks (31.9%)
 **📋 Available Documents**:
 - `要件定義書_詳細版.md` - Complete technical requirements with architecture
 - `データベース設計書.md` - Full database schema with 12 tables, RLS, indexing
@@ -360,11 +364,11 @@ cd backend && pytest -v
 ## Development Roadmap
 
 ### Immediate Next Steps
-**次の高優先度タスク (DB-004: RLSポリシー設定)**
-- Row Level Security ポリシー設定（12テーブル全対応）
-- ユーザー別データアクセス制御
-- セキュリティポリシーテスト
-- Supabase RLS最適化
+**次の高優先度タスク (BE-001: FastAPI基本設定)**
+- FastAPI CORS設定（開発・本番環境対応）
+- セキュリティミドルウェア実装（JWT、レート制限、ヘッダー）
+- ミドルウェア設定（リクエスト/レスポンス処理）
+- Pydantic設定最適化
 
 ### Phase Progression
 1. **MVP (Week 1-2)**: 72 tasks - Core authentication, basic case management, simple reply generation
