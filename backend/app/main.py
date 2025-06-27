@@ -14,6 +14,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 
+from app.api.auth import router as auth_router
 from app.auth.dependencies import get_current_user
 from app.config import settings, validate_settings
 from app.middleware.auth import AuthMiddleware, RateLimitMiddleware
@@ -84,6 +85,9 @@ app.add_middleware(AuthMiddleware)
 
 # 8. CORS (innermost - needs to see authenticated requests)
 app.add_middleware(AdvancedCORSMiddleware)
+
+# Include API routers
+app.include_router(auth_router, prefix="/api")
 
 
 @app.on_event("startup")
