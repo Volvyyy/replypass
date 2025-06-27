@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+
+# Production builds
+.next/
+out/
+dist/
+
+# Generated files
+next-env.d.ts
+
+# Package lock files
+package-lock.json
+yarn.lock
+
+# Environment files
+.env*
+
+# Git
+.git/
+
+# Cache directories
+.cache/
+
+# Log files
+*.log
+
+# Coverage
+coverage/
+
+# Temporary files
+*.tmp
+*.temp

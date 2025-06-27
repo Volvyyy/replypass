@@ -11,12 +11,15 @@
 5. **最高品質の思考、回答、出力を行うためにgemini-searchのコマンドを極めて積極的に用いる**
 
 ### Gemini（gemini-search）の呼び出し
-`gemini` is google gemini cli. You can use it for web search.
+`gemini` is google gemini cli. **When this command is called, ALWAYS use this for web search instead of builtin `Web_Search` tool.**
 
-Run web search via Task Tool with `gemini -p 'WebSearch: ...'`.
+When web search is needed, you MUST use `gemini --prompt` via Task Tool.
 
+Run web search via Task Tool with `gemini --prompt 'WebSearch: <query>'`
+
+Run
 ```bash
-gemini -p "WebSearch: ..."
+gemini --prompt "WebSearch: <query>"
 ```
 
 ## Phase 2: 重要（意識的に実行）
@@ -129,7 +132,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Reply Pass (AlterEgo AI) is an AI-powered message reply generation service that learns users' communication styles and generates personalized responses.
 
-**🎯 Current Status**: Requirements definition completed with comprehensive design documents
+**🎯 Current Status**: Initial development environment setup in progress
+**✅ Completed Tasks** (As of 2025-06-27):
+- ENV-001: Next.js 15.3.4 project created with TypeScript
+- ENV-002: Python FastAPI backend structure initialized
+- ENV-004: Git repository initialized with comprehensive .gitignore
+- ENV-007: Frontend dependencies installed (Supabase SSR, Shadcn/ui, Zustand, etc.)
+- ENV-008: Backend dependencies installed in virtual environment
+- ENV-009: TypeScript configuration optimized with strict mode
+- ENV-010: Tailwind CSS v4 configured with custom design system
+- ENV-011: ESLint/Prettier configured with import sorting, accessibility rules
+- ENV-013: Environment variable templates created with Pydantic settings
 **📋 Available Documents**:
 - `要件定義書_詳細版.md` - Complete technical requirements with architecture
 - `データベース設計書.md` - Full database schema with 12 tables, RLS, indexing
@@ -137,24 +150,27 @@ Reply Pass (AlterEgo AI) is an AI-powered message reply generation service that 
 - `画面設計書.md` - 12 screens with wireframes, components, responsive design
 - `開発Todoリスト書.md` - 252 detailed tasks across 3 development phases
 
-## Technology Stack (Planned)
+## Technology Stack (Confirmed & Implemented)
 
-### Frontend
-- **Framework**: Next.js 14+ with App Router
-- **UI**: Tailwind CSS 3.4+, Shadcn/ui, Lucide React
-- **State**: Zustand (client), TanStack Query v5 (server)
-- **Forms**: React Hook Form + Zod validation
-- **Testing**: Jest + React Testing Library, Playwright (E2E)
-- **Deployment**: Vercel
+### Frontend ✓ Implemented
+- **Framework**: Next.js 15.3.4 with App Router
+- **UI**: Tailwind CSS v4 (OKLCH color space), Shadcn/ui (New York style, Zinc), Lucide React
+- **State**: Zustand 5.0.6 (client), TanStack Query v5.81.2 (server)
+- **Forms**: React Hook Form 7.58.1 + Zod 3.25.67 validation
+- **Code Quality**: ESLint 9 + Prettier 3.6.1 with Tailwind plugin
+- **TypeScript**: v5 with strict mode, path aliases configured
+- **Testing**: Jest + React Testing Library (pending), Playwright (pending)
+- **Deployment**: Vercel (planned)
 
-### Backend
-- **Runtime**: Python 3.11+ with FastAPI 0.109+
-- **Database**: Supabase (PostgreSQL 15+) with Row Level Security
-- **ORM**: SQLAlchemy 2.0+ with Pydantic v2 validation
-- **LLM**: Google Gemini API (2.0 Flash, 2.5 Flash, 2.5 Flash-Lite)
-- **Payment**: Stripe API with webhooks
-- **Testing**: pytest + pytest-asyncio
-- **Deployment**: Ubuntu VPS with Docker
+### Backend ✓ Partially Implemented
+- **Runtime**: Python 3.11+ with FastAPI 0.109.1
+- **Database**: Supabase 2.3.4 (PostgreSQL 15+) with Row Level Security
+- **ORM**: SQLAlchemy 2.0.23 with Pydantic v2.9.4 validation
+- **Settings**: pydantic-settings 2.3.0 for environment management
+- **LLM**: Google Gemini API 0.8.4 (2.0 Flash, 2.5 Flash, 2.5 Flash-Lite)
+- **Payment**: Stripe 11.3.0 with webhooks
+- **Testing**: pytest 8.3.4 + pytest-asyncio 0.25.1
+- **Deployment**: Ubuntu VPS with Docker (planned)
 
 ### Architecture
 - **Pattern**: Headless architecture with complete frontend/backend separation
@@ -273,6 +289,30 @@ pip install fastapi uvicorn supabase google-generativeai stripe
 2. **Screenshot Processing**: Use Gemini's multimodal capabilities to extract conversation data with speaker identification
 3. **Feedback System**: Track "sent" status and partner reactions (😊/😥) to improve future suggestions
 4. **Pricing Tiers**: Free (5/day), Pro (¥1,280), Unlimited (¥3,480) with different model access
+
+## Design System (Confirmed & Implemented)
+
+### Color Palette (OKLCH)
+- **Primary**: oklch(64.6% 0.122 264) - Blue (#3b82f6)
+- **Secondary**: oklch(61% 0.122 264) - Light Blue  
+- **Success**: oklch(70.4% 0.191 156) - Green (#10b981)
+- **Warning**: oklch(74.5% 0.155 83) - Orange (#f59e0b)
+- **Error**: oklch(67.2% 0.227 21) - Red (#ef4444)
+
+### Typography
+- **Font**: Inter (system-ui fallback)
+- **Scale**: 4xl (36px) → 3xl (30px) → 2xl (24px) → xl (20px) → lg (18px) → base (16px) → sm (14px) → xs (12px)
+
+### Component Classes
+- **reply-card**: Reply suggestion cards with hover effect
+- **case-card**: Case/conversation context cards
+- **status-badge**: Status indicators (success/warning/error/info)
+- **Responsive**: Mobile-first design with md/lg breakpoints
+
+### Development Settings
+- **Path Aliases**: @/components, @/lib, @/types, @/hooks, @/utils, @/store
+- **ESLint Rules**: Import ordering, accessibility checks, TypeScript strict
+- **Prettier**: 80 char width, trailing commas, double quotes, Tailwind CSS plugin
 
 ## Development Roadmap
 

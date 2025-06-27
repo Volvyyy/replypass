@@ -9,6 +9,26 @@
 
 ## **1. 概要**
 
+### 1.0. 進捗状況（2025-06-27時点）
+**完了タスク数**: 9/252タスク（3.6%）
+- **環境構築**: 9/16タスク完了（56.3%）
+- **MVP開発**: 9/72タスク完了（12.5%）
+
+**完了済みタスク**:
+- ✅ ENV-001: Next.js 15.3.4プロジェクト作成
+- ✅ ENV-002: Python FastAPIプロジェクト作成  
+- ✅ ENV-004: Git/GitHub設定（リポジトリ作成は未完了）
+- ✅ ENV-007: Frontend依存関係インストール
+- ✅ ENV-008: Backend依存関係インストール
+- ✅ ENV-009: TypeScript設定最適化
+- ✅ ENV-010: Tailwind CSS設定（OKLCH対応）
+- ✅ ENV-011: ESLint/Prettier設定
+- ✅ ENV-013: 環境変数テンプレート作成
+
+**次の高優先度タスク**:
+- ENV-003: Supabaseプロジェクト作成・設定
+- ENV-015: API外部サービス設定（Gemini, Stripe）
+
 ### 1.1. タスク表記規則
 - **[ENV]**: 環境構築・設定
 - **[FE]**: フロントエンド実装
@@ -38,12 +58,12 @@
 ### **2.1. 環境構築・初期設定（16タスク）**
 
 #### **プロジェクト初期化**
-1. **[ENV-001]** Next.js 14プロジェクト作成 `P0` `XS`
+1. **[ENV-001]** Next.js 14プロジェクト作成 `P0` `XS` ✅ **完了**
    - `npx create-next-app@latest frontend --typescript --tailwind --app`
    - ESLint、Prettier設定
    - **完了条件**: `npm run dev`で起動確認
 
-2. **[ENV-002]** Python FastAPIプロジェクト作成 `P0` `S`
+2. **[ENV-002]** Python FastAPIプロジェクト作成 `P0` `S` ✅ **完了**
    - ディレクトリ構造作成: `backend/app/`
    - `pyproject.toml`、`requirements.txt`作成
    - **ファイル**: `backend/app/main.py`、`backend/app/__init__.py`
@@ -55,7 +75,7 @@
    - **ファイル**: `frontend/.env.local`、`backend/.env`
    - **完了条件**: 管理画面へのアクセス確認
 
-4. **[ENV-004]** Git/GitHub設定 `P0` `XS`
+4. **[ENV-004]** Git/GitHub設定 `P0` `XS` ✅ **完了** (GitHubリポジトリ作成は未完了)
    - リポジトリ作成、初期コミット
    - ブランチ戦略設定（main, develop）
    - **ファイル**: `.gitignore`、`README.md`
@@ -75,31 +95,31 @@
    - **完了条件**: チーム全体で共通設定適用
 
 #### **パッケージ・依存関係**
-7. **[ENV-007]** Frontend依存関係インストール `P0` `S`
+7. **[ENV-007]** Frontend依存関係インストール `P0` `S` ✅ **完了**
    - Shadcn/ui、Zustand、TanStack Query
    - React Hook Form、Zod
    - **ファイル**: `frontend/package.json`、`frontend/components.json`
    - **コマンド**: `npx shadcn-ui@latest init`
    - **完了条件**: 全依存関係でビルド成功
 
-8. **[ENV-008]** Backend依存関係インストール `P0` `S`
+8. **[ENV-008]** Backend依存関係インストール `P0` `S` ✅ **完了**
    - FastAPI、SQLAlchemy、Pydantic
    - Google Generative AI、Stripe
    - **ファイル**: `backend/requirements.txt`
    - **完了条件**: 全依存関係でサーバー起動成功
 
 #### **基本設定ファイル**
-9. **[ENV-009]** TypeScript設定最適化 `P1` `XS`
+9. **[ENV-009]** TypeScript設定最適化 `P1` `XS` ✅ **完了**
    - **ファイル**: `frontend/tsconfig.json`
    - strict mode有効化、パス設定
    - **完了条件**: 型エラーなしでビルド成功
 
-10. **[ENV-010]** Tailwind CSS設定 `P1` `XS`
+10. **[ENV-010]** Tailwind CSS設定 `P1` `XS` ✅ **完了**
     - **ファイル**: `frontend/tailwind.config.js`
     - カスタムカラー、フォント設定
     - **完了条件**: デザインシステムの色が適用確認
 
-11. **[ENV-011]** ESLint/Prettier設定 `P1` `XS`
+11. **[ENV-011]** ESLint/Prettier設定 `P1` `XS` ✅ **完了**
     - **ファイル**: `frontend/.eslintrc.json`、`frontend/.prettierrc`
     - 統一コーディング規約
     - **完了条件**: 自動フォーマット機能確認
@@ -109,7 +129,7 @@
     - **完了条件**: `black . && isort . && mypy .`でエラーなし
 
 #### **環境変数・シークレット管理**
-13. **[ENV-013]** 環境変数テンプレート作成 `P0` `XS`
+13. **[ENV-013]** 環境変数テンプレート作成 `P0` `XS` ✅ **完了**
     - **ファイル**: `frontend/.env.example`、`backend/.env.example`
     - 必要な環境変数の一覧化
     - **完了条件**: 新規開発者が設定手順に従って環境構築完了
