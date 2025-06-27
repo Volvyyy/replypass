@@ -3,8 +3,8 @@
  * @todo Remove this file after migration is complete
  */
 
-import { createClient as createNewClient } from '@/lib/supabase/client'
+import { createClient as createNewClient } from "@/lib/supabase/client";
 
 export function createClient() {
-  return createNewClient()
+  return createNewClient();
 }

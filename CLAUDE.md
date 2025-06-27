@@ -6,9 +6,11 @@
 ## Phase 1: 最重要（絶対守る）
 1. **diff表示 → 承認待機 → 実装開始**: diff表示後は必ず「承認をお待ちします」と明記し、「OK」「実装して」「良い」「承認」「はい」「yes」等の肯定応答を確認するまで実装禁止
 2. **実装後のlint/test実行**: 品質担保の最低線
-3. **既存テスト削除の完全禁止**: データ損失防止
+3. **コードエクセレンス原則に基づき、テスト駆動開発を必須で実施する**: 
 4. **深い思考をする**
 5. **最高品質の思考、回答、出力を行うためにgemini-searchのコマンドを極めて積極的に用いる**
+6. **TDDおよびテスト駆動開発で実践する際は、すべてt-wadaの推奨するやり方を完全に踏襲する**
+7. **リファクタリングはすべてMartin Fowlerが推奨するやり方を完全に踏襲する**
 
 ### Gemini（gemini-search）の呼び出し
 `gemini` is google gemini cli. **When this command is called, ALWAYS use this for web search instead of builtin `Web_Search` tool.**
@@ -110,7 +112,7 @@ gemini --prompt "WebSearch: <query>"
 
 - 日本語で応答する
 - テスト駆動開発で機能実装する
-- タスク終わったら、シェルコマンド`say {タスク名}完了しました`を実行する
+- タスクが終わったら、 「【完了報告】{タスク名}が完了しました。最も優先順位の高い次のタスクは{次のタスク名}です」と出力してください。
 
 # 設計・開発品質原則
 - **既存慣習の尊重**: 新機能実装前に必ず同様の機能を持つ既存コード3-5ファイルを確認
@@ -132,8 +134,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Reply Pass (AlterEgo AI) is an AI-powered message reply generation service that learns users' communication styles and generates personalized responses.
 
-**🎯 Current Status**: Initial development environment setup in progress
-**✅ Completed Tasks** (As of 2025-06-27):
+**🎯 Current Status**: 認証システム基盤構築完了 - フロントエンド認証画面開発開始
+**✅ Completed Tasks** (As of 2025-06-27 - 18/252タスク完了、7.1%):
 - ENV-001: Next.js 15.3.4 project created with TypeScript
 - ENV-002: Python FastAPI backend structure initialized
 - ENV-003: Supabase project setup with SSR authentication
@@ -144,12 +146,25 @@ Reply Pass (AlterEgo AI) is an AI-powered message reply generation service that 
 - ENV-009: TypeScript configuration optimized with strict mode
 - ENV-010: Tailwind CSS v4 configured with custom design system
 - ENV-011: ESLint/Prettier configured with import sorting, accessibility rules
+- ENV-012: Python development tools setup (Black, isort, mypy strict mode)
 - ENV-013: Environment variable templates created with Pydantic settings
+- ENV-014: Supabase CLI setup with Google OAuth support
 - ENV-015: API external services setup (Gemini new SDK, Stripe latest version)
+- DB-001: Supabase migration initialization (PostgreSQL 17, RLS enabled)
+- DB-002: Basic tables created (PostgreSQL 17 optimization, partitioning, GIN indexes)
+- DB-003: Remaining tables created (12 tables complete, BRIN/GIN/covering indexes, usage limit functions)
+- API-001: Supabase Auth setup (@supabase/ssr 2025, JWT validation, security headers, 11 tests passing)
 
 **🚨 Critical Technology Updates**:
 - **Gemini SDK Migration**: `google-generativeai` → `google-genai` (mandatory by Sep 30, 2025)
 - **Stripe SDK Update**: v8.8.0 → v12.2.0 (Enhanced Payment Element support)
+- **Supabase Auth 2025**: @supabase/ssr package implemented (replaces deprecated auth-helpers)
+
+**📈 Current Progress**:
+- **Environment Setup**: 14/16 tasks (87.5%)
+- **Database Foundation**: 3/8 tasks (37.5%) 
+- **Authentication System**: 1/8 tasks (12.5%)
+- **Overall MVP**: 18/72 tasks (25.0%)
 **📋 Available Documents**:
 - `要件定義書_詳細版.md` - Complete technical requirements with architecture
 - `データベース設計書.md` - Full database schema with 12 tables, RLS, indexing
@@ -171,13 +186,16 @@ Reply Pass (AlterEgo AI) is an AI-powered message reply generation service that 
 
 ### Backend ✓ Implemented
 - **Runtime**: Python 3.11+ with FastAPI 0.109.1
-- **Database**: Supabase 2.16.0 (PostgreSQL 15+) with Row Level Security
+- **Database**: Supabase 2.16.0 (PostgreSQL 17) with Row Level Security
 - **ORM**: SQLAlchemy 2.0.23 with Pydantic v2.9.4 validation
 - **Settings**: pydantic-settings 2.3.0 for environment management
 - **LLM**: Google Gemini API 1.22.0 (new SDK, mandatory by Sep 2025)
 - **Payment**: Stripe 12.2.0 with enhanced webhooks and security
 - **API Clients**: Gemini, Stripe, Supabase clients implemented
-- **Testing**: pytest 8.3.4 + pytest-asyncio 0.25.1
+- **Authentication**: JWT Bearer validation with @supabase/ssr integration
+- **Security**: Rate limiting, CORS, security headers middleware
+- **Testing**: pytest 8.3.4 + pytest-asyncio 0.25.1 (11 auth tests passing)
+- **Code Quality**: Black, isort, mypy with strict mode
 - **Deployment**: Ubuntu VPS with Docker (planned)
 
 ### Architecture
@@ -286,9 +304,21 @@ npm run dev
 
 ### Backend (Python)
 ```bash
+cd backend
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install fastapi uvicorn supabase google-generativeai stripe
+pip install -r requirements.txt
+python -c "from app.config import validate_settings; validate_settings()"
+uvicorn app.main:app --reload
+```
+
+### Testing
+```bash
+# Frontend
+cd frontend && npm run check-all
+
+# Backend  
+cd backend && pytest -v
 ```
 
 ## Key Implementation Notes
@@ -325,7 +355,11 @@ pip install fastapi uvicorn supabase google-generativeai stripe
 ## Development Roadmap
 
 ### Immediate Next Steps
-**Ready to start development following the detailed 252-task plan in `開発Todoリスト書.md`**
+**次の高優先度タスク (FE-001: 認証コンテキスト作成)**
+- グローバル認証状態管理の実装
+- React Context + Zustand による状態管理
+- Supabase SSR クライアントとの統合
+- 認証状態の永続化とセッション管理
 
 ### Phase Progression
 1. **MVP (Week 1-2)**: 72 tasks - Core authentication, basic case management, simple reply generation
