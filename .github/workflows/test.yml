@@ -28,8 +28,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Patch tsconfig for moduleResolution
+        run: sed -i 's/"moduleResolution": "bundler"/"moduleResolution": "node"/' tsconfig.json
+
       - name: TypeScript check
-        run: npm run type-check -- --moduleResolution node
+        run: npm run type-check
 
       - name: Lint check
         run: npm run lint
