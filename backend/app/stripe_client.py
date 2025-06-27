@@ -357,5 +357,25 @@ class StripeClient:
             raise ValueError(f"Invalid plan name: {plan_name}")
 
 
+    def health_check(self) -> bool:
+        """
+        Health check for Stripe API
+        
+        Returns:
+            True if API is accessible, False otherwise
+        """
+        try:
+            # Simple account retrieval test
+            account = stripe.Account.retrieve()
+            return bool(account and account.id)
+        except Exception:
+            return False
+
+
+def get_stripe_client() -> StripeClient:
+    """Get Stripe client instance"""
+    return stripe_client
+
+
 # グローバルクライアントインスタンス
 stripe_client = StripeClient()

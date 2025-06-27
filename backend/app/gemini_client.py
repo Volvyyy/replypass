@@ -369,5 +369,25 @@ JSON形式で、各項目を構造化して出力してください：
         }
 
 
-# グローバルクライアントインスタンス
+    async def health_check(self) -> bool:
+        """
+        Health check for Gemini API
+        
+        Returns:
+            True if API is accessible, False otherwise
+        """
+        try:
+            # Simple test generation request
+            response = await self.generate_content("Hello", max_tokens=10, temperature=0.1)
+            return bool(response.strip())
+        except Exception:
+            return False
+
+
+def get_gemini_client() -> GeminiClient:
+    """Get Gemini client instance"""
+    return gemini_client
+
+
+# グローバルクライアントインスタンس
 gemini_client = GeminiClient()

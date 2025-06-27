@@ -30,6 +30,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Track application startup time for health checks
+startup_time = datetime.utcnow()
+
 # 設定の検証
 validate_settings()
 
@@ -129,37 +132,62 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """詳細ヘルスチェック"""
-    health_status = {
+    """
+    Basic liveness check endpoint (fast, no dependencies)
+    Returns 200 if the application is running and can handle requests
+    """
+    return {
         "status": "healthy",
-        "service": "reply-pass-api",
+        "service": "reply-pass-api", 
         "version": "1.0.0",
-        "environment": settings.environment,
         "timestamp": datetime.utcnow().isoformat(),
-        "features": {
-            "supabase_auth": True,
-            "jwt_validation": True,
-            "rate_limiting": True,
-            "security_headers": True,
-            "request_validation": True,
-            "structured_logging": True,
-            "cors_enabled": True,
-        },
-        "middleware": {
-            "security_headers": "active",
-            "cors": "configured",
-            "rate_limiting": "active",
-            "request_validation": "active",
-            "logging": "active",
-            "compression": "gzip",
-        },
+        "environment": settings.environment,
     }
 
-    # TODO: Add database health check
-    # TODO: Add Redis health check
-    # TODO: Add external service health checks
 
-    return health_status
+@app.get("/health/ready")
+async def readiness_check():
+    """
+    Readiness check - verifies all dependencies are available
+    Used by load balancers and orchestrators to determine if instance can accept traffic
+    """
+    from app.core.health import HealthChecker
+    
+    health_checker = HealthChecker()
+    health_result = await health_checker.check_readiness()
+    
+    status_code = 200 if health_result["status"] == "healthy" else 503
+    return JSONResponse(content=health_result, status_code=status_code)
+
+
+@app.get("/health/live")
+async def liveness_check():
+    """
+    Liveness check - basic application health without dependency checks
+    Used by orchestrators to determine if pod should be restarted
+    """
+    return {
+        "status": "healthy",
+        "service": "reply-pass-api",
+        "version": "1.0.0", 
+        "timestamp": datetime.utcnow().isoformat(),
+        "uptime_seconds": (datetime.utcnow() - startup_time).total_seconds(),
+    }
+
+
+@app.get("/health/detailed")
+async def detailed_health_check():
+    """
+    Comprehensive health check with all dependencies and metrics
+    Used for monitoring and debugging purposes
+    """
+    from app.core.health import HealthChecker
+    
+    health_checker = HealthChecker()
+    health_result = await health_checker.check_comprehensive()
+    
+    status_code = 200 if health_result["status"] == "healthy" else 503
+    return JSONResponse(content=health_result, status_code=status_code)
 
 
 @app.get("/auth/profile")

@@ -20,13 +20,74 @@ def test_root_endpoint():
 
 
 def test_health_check_endpoint():
-    """Test the health check endpoint"""
+    """Test the basic health check endpoint (liveness)"""
     response = client.get("/health")
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "healthy"
     assert data["service"] == "reply-pass-api"
     assert data["version"] == "1.0.0"
+    assert "timestamp" in data
+    assert "environment" in data
+
+
+def test_health_live_endpoint():
+    """Test the liveness check endpoint"""
+    response = client.get("/health/live")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "healthy"
+    assert data["service"] == "reply-pass-api"
+    assert data["version"] == "1.0.0"
+    assert "timestamp" in data
+    assert "uptime_seconds" in data
+    assert isinstance(data["uptime_seconds"], (int, float))
+    assert data["uptime_seconds"] >= 0
+
+
+def test_health_ready_endpoint():
+    """Test the readiness check endpoint"""
+    response = client.get("/health/ready")
+    # Should return 200 for healthy or 503 for unhealthy
+    assert response.status_code in [200, 503]
+    data = response.json()
+    assert data["status"] in ["healthy", "degraded", "unhealthy"]
+    assert data["service"] == "reply-pass-api"
+    assert data["version"] == "1.0.0"
+    assert "timestamp" in data
+    assert "response_time_ms" in data
+    assert "checks" in data
+    assert "summary" in data
+
+
+def test_health_detailed_endpoint():
+    """Test the detailed health check endpoint"""
+    response = client.get("/health/detailed")
+    # Should return 200 for healthy or 503 for unhealthy
+    assert response.status_code in [200, 503]
+    data = response.json()
+    assert data["status"] in ["healthy", "degraded", "unhealthy"]
+    assert data["service"] == "reply-pass-api"
+    assert data["version"] == "1.0.0"
+    assert "timestamp" in data
+    assert "response_time_ms" in data
+    assert "uptime_seconds" in data
+    assert "checks" in data
+    assert "summary" in data
+    assert "system_info" in data
+    
+    # Check summary structure
+    summary = data["summary"]
+    assert "total_checks" in summary
+    assert "healthy_checks" in summary
+    assert "degraded_checks" in summary
+    assert "unhealthy_checks" in summary
+    
+    # Check system info structure
+    system_info = data["system_info"]
+    assert "environment" in system_info
+    assert "features" in system_info
+    assert "middleware" in system_info
 
 
 def test_docs_endpoint():
