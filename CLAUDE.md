@@ -112,7 +112,8 @@ gemini --prompt "WebSearch: <query>"
 
 - 日本語で応答する
 - テスト駆動開発で機能実装する
-- タスクが終わったら、 「【完了報告】{タスク名}が完了しました。最も優先順位の高い次のタスクは{次のタスク名}です」と出力してください。
+- タスクが終わったら、 開発Todoリスト書.mdの該当タスクに完了のチェックを必ずつけ、
+「【完了報告】{タスク名}が完了しました。最も優先順位の高い次のタスクは{次のタスク名}です」と出力してください。
 
 # 設計・開発品質原則
 - **既存慣習の尊重**: 新機能実装前に必ず同様の機能を持つ既存コード3-5ファイルを確認
@@ -134,8 +135,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Reply Pass (AlterEgo AI) is an AI-powered message reply generation service that learns users' communication styles and generates personalized responses.
 
-**🎯 Current Status**: 環境構築100%完了 - フロントエンド認証画面開発開始
-**✅ Completed Tasks** (As of 2025-06-27 - 20/252タスク完了、7.9%):
+**🎯 Current Status**: 環境構築100%完了 - フロントエンド認証画面開発完了
+**✅ Completed Tasks** (As of 2025-06-27 - 21/252タスク完了、8.3%):
 - ENV-001: Next.js 15.3.4 project created with TypeScript
 - ENV-002: Python FastAPI backend structure initialized
 - ENV-003: Supabase project setup with SSR authentication
@@ -155,6 +156,8 @@ Reply Pass (AlterEgo AI) is an AI-powered message reply generation service that 
 - DB-002: Basic tables created (PostgreSQL 17 optimization, partitioning, GIN indexes)
 - DB-003: Remaining tables created (12 tables complete, BRIN/GIN/covering indexes, usage limit functions)
 - API-001: Supabase Auth setup (@supabase/ssr 2025, JWT validation, security headers, 11 tests passing)
+- FE-001: Authentication context created (React Context + Zustand global state management)
+- FE-002: Login screen implementation (React Hook Form 7.58.1 + Zod 3.25.67 validation)
 
 **🚨 Critical Technology Updates**:
 - **Gemini SDK Migration**: `google-generativeai` → `google-genai` (mandatory by Sep 30, 2025)
@@ -164,8 +167,8 @@ Reply Pass (AlterEgo AI) is an AI-powered message reply generation service that 
 **📈 Current Progress**:
 - **Environment Setup**: 16/16 tasks (100%) ✅ **完了**
 - **Database Foundation**: 3/8 tasks (37.5%) 
-- **Authentication System**: 2/8 tasks (25.0%)
-- **Overall MVP**: 20/72 tasks (27.8%)
+- **Authentication System**: 3/8 tasks (37.5%)
+- **Overall MVP**: 21/72 tasks (29.2%)
 **📋 Available Documents**:
 - `要件定義書_詳細版.md` - Complete technical requirements with architecture
 - `データベース設計書.md` - Full database schema with 12 tables, RLS, indexing
@@ -356,11 +359,11 @@ cd backend && pytest -v
 ## Development Roadmap
 
 ### Immediate Next Steps
-**次の高優先度タスク (FE-002: ログイン画面実装)**
-- React Hook Form + Zod バリデーション実装
+**次の高優先度タスク (FE-003: サインアップ画面実装)**
+- React Hook Form + Zod バリデーション (パスワード確認・利用規約同意)
+- 利用規約同意チェックボックス
+- パスワード強度表示
 - レスポンシブUI設計 (Tailwind CSS v4)
-- 認証エラーハンドリング
-- グローバル認証状態との統合
 
 ### Phase Progression
 1. **MVP (Week 1-2)**: 72 tasks - Core authentication, basic case management, simple reply generation

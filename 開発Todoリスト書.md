@@ -16,28 +16,6 @@
 - **認証システム基盤**: 2/8タスク完了（25.0%）
 - **MVP開発**: 20/72タスク完了（27.8%）
 
-**完了済みタスク**:
-- ✅ ENV-001: Next.js 15.3.4プロジェクト作成
-- ✅ ENV-002: Python FastAPIプロジェクト作成  
-- ✅ ENV-003: Supabaseプロジェクト作成・設定
-- ✅ ENV-004: Git/GitHub設定
-- ✅ ENV-004b: GitHubリポジトリ作成（https://github.com/Volvyyy/replypass）
-- ✅ ENV-007: Frontend依存関係インストール
-- ✅ ENV-008: Backend依存関係インストール
-- ✅ ENV-009: TypeScript設定最適化
-- ✅ ENV-010: Tailwind CSS設定（OKLCH対応）
-- ✅ ENV-011: ESLint/Prettier設定
-- ✅ ENV-012: Python設定（Black、isort、mypy、strict=true）
-- ✅ ENV-013: 環境変数テンプレート作成
-- ✅ ENV-014: Supabase CLI設定（v2.26.9、Google OAuth対応）
-- ✅ ENV-015: API外部サービス設定（Gemini新SDK、Stripe最新版）
-- ✅ ENV-016: CI/CD基本設定（GitHub Actions workflow、プルリクエスト自動チェック機能）
-- ✅ DB-001: Supabaseマイグレーション初期化（PostgreSQL 17、RLS対応）
-- ✅ DB-002: 基本テーブル作成（PostgreSQL 17最適化、月次パーティション、GIN索引）
-- ✅ DB-003: 残りテーブル作成（全12テーブル完成、PostgreSQL 17 BRIN・GIN・カバリングインデックス、利用制限関数）
-- ✅ API-001: Supabase Auth設定（@supabase/ssr 2025対応、JWT検証、セキュリティヘッダー、11テスト成功）
-- ✅ FE-001: 認証コンテキスト作成（React Context + Zustand + カスタムフック、グローバル認証状態管理）
-
 **🚨 重要な技術更新**:
 - **Gemini SDK移行**: `google-generativeai` → `google-genai` (2025年9月30日までに必須)
 - **Stripe SDK更新**: v8.8.0 → v12.2.0 (Enhanced Payment Element対応)
