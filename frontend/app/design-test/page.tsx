@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -104,6 +106,36 @@ export default function DesignTestPage() {
             <Button variant="secondary">セカンダリボタン</Button>
             <Button variant="outline">アウトラインボタン</Button>
             <Button variant="ghost">ゴーストボタン</Button>
+          </div>
+        </section>
+
+        {/* New Components */}
+        <section className="space-y-6">
+          <h2 className="text-2xl font-semibold">新しいコンポーネント</h2>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card className="p-6">
+              <h3 className="mb-3 text-lg font-semibold">
+                パスワード強度インジケーター
+              </h3>
+              <p className="text-muted-foreground mb-4 text-sm">
+                リアルタイムパスワード強度評価とUX最適化
+              </p>
+              <Button asChild variant="outline">
+                <Link href="/design-test/password">デモを見る</Link>
+              </Button>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="mb-3 text-lg font-semibold">
+                サインアップフォーム例
+              </h3>
+              <p className="text-muted-foreground mb-4 text-sm">
+                React Hook Form統合とバリデーション
+              </p>
+              <Button asChild variant="outline">
+                <Link href="/design-test/signup-form">デモを見る</Link>
+              </Button>
+            </Card>
           </div>
         </section>
       </div>
