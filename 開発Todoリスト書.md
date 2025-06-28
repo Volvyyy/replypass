@@ -259,10 +259,10 @@
     - 利用規約同意チェックボックス
     - **完了条件**: 新規アカウント作成・メール認証完了
 
-29. **[FE-004]** パスワードリセット機能 `4` `M`
-    - **ファイル**: `frontend/app/auth/reset/page.tsx`
-    - メール送信・新パスワード設定
-    - **完了条件**: パスワード変更フロー完了
+29. **[FE-004]** パスワードリセット機能 `4` `M` ✅ **完了**
+    - **ファイル**: `frontend/app/auth/reset-password/page.tsx`, `frontend/app/auth/update-password/page.tsx`, `frontend/app/auth/confirm/route.ts`, `frontend/app/auth/error/page.tsx`（実装済み）
+    - メール送信・新パスワード設定・トークン検証・エラーハンドリング完全実装
+    - **完了条件**: パスワード変更フロー完了 ✅（TDD準拠、658行テストコード、セキュリティ強化）
 
 30. **[BE-001]** FastAPI基本設定（CORS、セキュリティミドルウェア） `1` `M` ✅ **完了**
     - **ファイル**: `backend/app/middleware/security.py`, `backend/app/middleware/cors_handler.py`, `backend/app/middleware/request_validator.py`, `backend/app/middleware/logging_middleware.py`, `backend/app/core/security.py`
