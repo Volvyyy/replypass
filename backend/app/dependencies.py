@@ -62,7 +62,7 @@ async def verify_jwt_token(
 
 
 async def get_current_user(
-    token_payload: Dict[str, Any] = Depends(verify_jwt_token)
+    token_payload: Dict[str, Any] = Depends(verify_jwt_token),
 ) -> Dict[str, Any]:
     """
     現在認証されているユーザーの情報を取得
@@ -133,7 +133,7 @@ async def get_optional_user(
 
 
 def require_admin(
-    current_user: Dict[str, Any] = Depends(get_current_user)
+    current_user: Dict[str, Any] = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     管理者権限が必要なエンドポイント用

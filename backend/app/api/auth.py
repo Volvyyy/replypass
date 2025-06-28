@@ -315,7 +315,7 @@ async def request_password_reset(
 
 @router.get("/profile")
 async def get_user_profile(
-    current_user: Dict[str, Any] = Depends(get_current_user)
+    current_user: Dict[str, Any] = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """
     Get current user's profile

@@ -356,11 +356,10 @@ class StripeClient:
         else:
             raise ValueError(f"Invalid plan name: {plan_name}")
 
-
     def health_check(self) -> bool:
         """
         Health check for Stripe API
-        
+
         Returns:
             True if API is accessible, False otherwise
         """

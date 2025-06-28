@@ -15,6 +15,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 
 from app.api.auth import router as auth_router
+from app.api.cases import router as cases_router
 from app.auth.dependencies import get_current_user
 from app.config import settings, validate_settings
 from app.middleware.auth import AuthMiddleware, RateLimitMiddleware
@@ -91,6 +92,7 @@ app.add_middleware(AdvancedCORSMiddleware)
 
 # Include API routers
 app.include_router(auth_router, prefix="/api")
+app.include_router(cases_router, prefix="/api")
 
 
 @app.on_event("startup")
@@ -138,7 +140,7 @@ async def health_check():
     """
     return {
         "status": "healthy",
-        "service": "reply-pass-api", 
+        "service": "reply-pass-api",
         "version": "1.0.0",
         "timestamp": datetime.utcnow().isoformat(),
         "environment": settings.environment,
@@ -152,10 +154,10 @@ async def readiness_check():
     Used by load balancers and orchestrators to determine if instance can accept traffic
     """
     from app.core.health import HealthChecker
-    
+
     health_checker = HealthChecker()
     health_result = await health_checker.check_readiness()
-    
+
     status_code = 200 if health_result["status"] == "healthy" else 503
     return JSONResponse(content=health_result, status_code=status_code)
 
@@ -169,7 +171,7 @@ async def liveness_check():
     return {
         "status": "healthy",
         "service": "reply-pass-api",
-        "version": "1.0.0", 
+        "version": "1.0.0",
         "timestamp": datetime.utcnow().isoformat(),
         "uptime_seconds": (datetime.utcnow() - startup_time).total_seconds(),
     }
@@ -182,10 +184,10 @@ async def detailed_health_check():
     Used for monitoring and debugging purposes
     """
     from app.core.health import HealthChecker
-    
+
     health_checker = HealthChecker()
     health_result = await health_checker.check_comprehensive()
-    
+
     status_code = 200 if health_result["status"] == "healthy" else 503
     return JSONResponse(content=health_result, status_code=status_code)
 

@@ -31,7 +31,7 @@ async_session_factory = async_sessionmaker(
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     """
     Dependency to get async database session
-    
+
     Yields:
         AsyncSession: Database session
     """
@@ -49,11 +49,11 @@ async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
 async def create_tables():
     """
     Create all database tables
-    
+
     Used for testing and initial setup
     """
     from app.models.base import Base
-    
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
@@ -61,10 +61,10 @@ async def create_tables():
 async def drop_tables():
     """
     Drop all database tables
-    
+
     Used for testing cleanup
     """
     from app.models.base import Base
-    
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
