@@ -123,7 +123,7 @@ export function useAuth() {
 
       try {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/auth/reset-password`,
+          redirectTo: `${window.location.origin}/auth/confirm?next=/auth/update-password`,
         });
 
         if (error) {
@@ -135,6 +135,35 @@ export function useAuth() {
         return { error: null };
       } catch (error) {
         console.error("Reset password failed:", error);
+        return { error: error as Error };
+      } finally {
+        setLoading(false);
+      }
+    },
+    [supabase, setLoading]
+  );
+
+  /**
+   * Update user password
+   */
+  const updatePassword = useCallback(
+    async (password: string) => {
+      setLoading(true);
+
+      try {
+        const { error } = await supabase.auth.updateUser({
+          password,
+        });
+
+        if (error) {
+          console.error("Update password error:", error.message);
+          return { error };
+        }
+
+        console.log("Password updated successfully");
+        return { error: null };
+      } catch (error) {
+        console.error("Update password failed:", error);
         return { error: error as Error };
       } finally {
         setLoading(false);
@@ -189,6 +218,7 @@ export function useAuth() {
     signUp,
     signOut,
     resetPassword,
+    updatePassword,
     getCurrentUser,
   };
 }
